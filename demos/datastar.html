@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@skammer/split — Datastar demo</title>
+    <link rel="stylesheet" href="/src/split.css" />
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-RC.6/bundles/datastar.js"
+    ></script>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        --panel: light-dark(#fff, #1c1c1e);
+        --panel-2: light-dark(#f4f4f7, #2a2a2e);
+        --panel-3: light-dark(#e6e6eb, #3a3a3f);
+        --ink: light-dark(#222, #eee);
+        --ink-dim: light-dark(#666, #999);
+      }
+      body {
+        margin: 0;
+        background: light-dark(#fafafa, #111);
+        color: var(--ink);
+      }
+      header {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--panel-3);
+      }
+      header h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1.1rem;
+      }
+      header p {
+        margin: 0;
+        color: var(--ink-dim);
+        font-size: 0.85rem;
+      }
+      .demo {
+        margin: 1.25rem;
+        border: 1px solid var(--panel-3);
+        border-radius: 8px;
+        background: var(--panel);
+        overflow: hidden;
+      }
+      .demo > h2 {
+        margin: 0;
+        padding: 0.6rem 0.9rem;
+        font-size: 0.95rem;
+        background: var(--panel-2);
+        border-bottom: 1px solid var(--panel-3);
+      }
+      .demo > .body {
+        height: 320px;
+      }
+      split-pane {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        color: var(--ink-dim);
+        background: var(--panel);
+      }
+      split-pane:nth-child(odd) {
+        background: var(--panel-2);
+      }
+      .toolbar {
+        padding: 0.5rem 0.9rem;
+        background: var(--panel-2);
+        border-top: 1px solid var(--panel-3);
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        font-size: 0.85rem;
+        align-items: center;
+      }
+      button {
+        font: inherit;
+        padding: 0.25rem 0.6rem;
+        border: 1px solid var(--panel-3);
+        border-radius: 5px;
+        background: var(--panel);
+        color: inherit;
+        cursor: pointer;
+      }
+      .signal {
+        font-family: ui-monospace, monospace;
+        font-size: 0.8rem;
+        color: var(--ink-dim);
+      }
+      kbd {
+        font: 0.8em ui-monospace, monospace;
+        padding: 0 0.35em;
+        border: 1px solid var(--panel-3);
+        border-radius: 3px;
+        background: var(--panel-2);
+      }
+    </style>
+  </head>
+  <body data-signals="{layout: [33,33,34], sidebar: 25, sidebarCollapsed: false}">
+    <header>
+      <h1>@skammer/split — with Datastar</h1>
+      <p>
+        Same components, wired up via Datastar attributes. Drag the handle and
+        watch the signal update; click a button to set the signal and the
+        layout follows.
+      </p>
+    </header>
+
+    <section class="demo">
+      <h2>1. layout-change → signal</h2>
+      <div class="body">
+        <split-group
+          direction="horizontal"
+          data-on-layout-change="$layout = evt.detail.layout"
+        >
+          <split-pane>A</split-pane>
+          <split-resizer></split-resizer>
+          <split-pane>B</split-pane>
+          <split-resizer></split-resizer>
+          <split-pane>C</split-pane>
+        </split-group>
+      </div>
+      <div class="toolbar">
+        <span class="signal">$layout = </span>
+        <span class="signal" data-text="JSON.stringify($layout.map(n=>+n.toFixed(1)))"></span>
+      </div>
+    </section>
+
+    <section class="demo">
+      <h2>2. Signal → setLayout (programmatic control)</h2>
+      <div class="body">
+        <split-group
+          id="bound"
+          direction="horizontal"
+          data-on-layout-change="$layout = evt.detail.layout"
+          data-effect="$bound && $bound.setLayout && $bound.setLayout($layout)"
+        >
+          <split-pane>A</split-pane>
+          <split-resizer></split-resizer>
+          <split-pane>B</split-pane>
+          <split-resizer></split-resizer>
+          <split-pane>C</split-pane>
+        </split-group>
+      </div>
+      <div class="toolbar">
+        <button data-on-click="$layout = [20, 60, 20]">20 / 60 / 20</button>
+        <button data-on-click="$layout = [50, 25, 25]">50 / 25 / 25</button>
+        <button data-on-click="$layout = [10, 10, 80]">10 / 10 / 80</button>
+        <span class="signal" data-text="JSON.stringify($layout.map(n=>+n.toFixed(1)))"></span>
+      </div>
+    </section>
+
+    <section class="demo">
+      <h2>3. Sidebar with signal-driven collapse</h2>
+      <div class="body">
+        <split-group
+          id="sidebar-group"
+          direction="horizontal"
+          data-on-layout-change="$sidebarCollapsed = evt.detail.layout[0] < 1"
+        >
+          <split-pane
+            id="sidebar"
+            min-size="120px"
+            collapsible
+            collapsed-size="0"
+            default-size="25"
+            data-on-collapse="$sidebarCollapsed = true"
+            data-on-expand="$sidebarCollapsed = false"
+          >sidebar</split-pane>
+          <split-resizer></split-resizer>
+          <split-pane>main</split-pane>
+        </split-group>
+      </div>
+      <div class="toolbar">
+        <button
+          data-on-click="$sidebarCollapsed ? sidebar.expand() : sidebar.collapse()"
+          data-text="$sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+        ></button>
+        <span class="signal" data-text="'collapsed=' + $sidebarCollapsed"></span>
+      </div>
+    </section>
+
+    <section class="demo">
+      <h2>4. Persisted via save-id (independent of signal)</h2>
+      <div class="body">
+        <split-group
+          direction="vertical"
+          save-id="datastar-demo"
+          data-on-layout-change="$layout = evt.detail.layout"
+        >
+          <split-pane>top — drag, refresh, persists</split-pane>
+          <split-resizer></split-resizer>
+          <split-pane>bottom</split-pane>
+        </split-group>
+      </div>
+      <div class="toolbar">
+        <button onclick="localStorage.removeItem('split:datastar-demo'); location.reload();">
+          Clear saved layout
+        </button>
+      </div>
+    </section>
+
+    <script type="module">
+      import "/src/index.ts";
+      // expose to global so data-effect attribute can call setLayout
+      window.bound = document.getElementById("bound");
+      window.sidebar = document.getElementById("sidebar");
+    </script>
+  </body>
+</html>

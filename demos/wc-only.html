@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@skammer/split — Web Components demo</title>
+    <link rel="stylesheet" href="/src/split.css" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        --panel: light-dark(#fff, #1c1c1e);
+        --panel-2: light-dark(#f4f4f7, #2a2a2e);
+        --panel-3: light-dark(#e6e6eb, #3a3a3f);
+        --ink: light-dark(#222, #eee);
+        --ink-dim: light-dark(#666, #999);
+        --accent: light-dark(#3b82f6, #60a5fa);
+      }
+      body {
+        margin: 0;
+        background: light-dark(#fafafa, #111);
+        color: var(--ink);
+      }
+      header {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--panel-3);
+      }
+      header h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1.1rem;
+      }
+      header p {
+        margin: 0;
+        color: var(--ink-dim);
+        font-size: 0.85rem;
+      }
+      .demo {
+        margin: 1.25rem;
+        border: 1px solid var(--panel-3);
+        border-radius: 8px;
+        background: var(--panel);
+        overflow: hidden;
+      }
+      .demo > h2 {
+        margin: 0;
+        padding: 0.6rem 0.9rem;
+        font-size: 0.95rem;
+        background: var(--panel-2);
+        border-bottom: 1px solid var(--panel-3);
+      }
+      .demo > .body {
+        height: 320px;
+      }
+      split-pane {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        color: var(--ink-dim);
+        background: var(--panel);
+      }
+      split-pane:nth-child(odd) {
+        background: var(--panel-2);
+      }
+      split-pane[data-collapsed] {
+        color: transparent;
+      }
+      .toolbar {
+        padding: 0.5rem 0.9rem;
+        background: var(--panel-2);
+        border-top: 1px solid var(--panel-3);
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        font-size: 0.85rem;
+      }
+      button {
+        font: inherit;
+        padding: 0.25rem 0.6rem;
+        border: 1px solid var(--panel-3);
+        border-radius: 5px;
+        background: var(--panel);
+        color: inherit;
+        cursor: pointer;
+      }
+      button:hover {
+        background: var(--panel-2);
+      }
+      kbd {
+        font: 0.8em ui-monospace, monospace;
+        padding: 0 0.35em;
+        border: 1px solid var(--panel-3);
+        border-radius: 3px;
+        background: var(--panel-2);
+      }
+      .ide split-pane {
+        background: var(--panel);
+      }
+      .ide .file-tree {
+        background: var(--panel-2);
+        align-items: flex-start;
+        padding: 0.6rem;
+        font-family: ui-monospace, monospace;
+        font-size: 0.8rem;
+        white-space: pre;
+        color: var(--ink);
+      }
+      .ide .terminal {
+        background: light-dark(#111, #000);
+        color: light-dark(#0f0, #6f6);
+        font-family: ui-monospace, monospace;
+        align-items: flex-start;
+        padding: 0.6rem;
+      }
+      [data-rtl="true"] .demo.rtl {
+        direction: rtl;
+      }
+      .live {
+        font-family: ui-monospace, monospace;
+        font-size: 0.8rem;
+        color: var(--ink-dim);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>@skammer/split — Web Components</h1>
+      <p>
+        Drag handles to resize. Use <kbd>Tab</kbd> to focus a handle, then
+        <kbd>←/→</kbd> or <kbd>↑/↓</kbd> to resize, <kbd>Shift</kbd> for big steps,
+        <kbd>Home</kbd>/<kbd>End</kbd> for limits, <kbd>Enter</kbd> to toggle
+        collapse, <kbd>F6</kbd> to cycle handles.
+      </p>
+    </header>
+
+    <section class="demo">
+      <h2>1. Horizontal — basic</h2>
+      <div class="body">
+        <split-group direction="horizontal">
+          <split-pane default-size="30">A</split-pane>
+          <split-resizer></split-resizer>
+          <split-pane>B</split-pane>
+          <split-resizer></split-resizer>
+          <split-pane default-size="20">C</split-pane>
+        </split-group>
+      </div>
+    </section>
+
+    <section class="demo">
+      <h2>2. Vertical</h2>
+      <div class="body">
+        <split-group direction="vertical">
+          <split-pane>top</split-pane>
+          <split-resizer></split-resizer>
+          <split-pane>bottom</split-pane>
+        </split-group>
+      </div>
+    </section>
+
+    <section class="demo">
+      <h2>3. Nested — IDE-style layout (px min-sizes, collapsible sidebar)</h2>
+      <div class="body ide">
+        <split-group direction="horizontal" id="ide">
+          <split-pane
+            class="file-tree"
+            min-size="120px"
+            max-size="40%"
+            default-size="22"
+            collapsible
+            collapsed-size="0"
+          >
+            <span>src/
+  index.ts
+  app.tsx
+  utils/
+    fmt.ts</span>
+          </split-pane>
+          <split-resizer></split-resizer>
+          <split-pane>
+            <split-group direction="vertical" style="width:100%;height:100%">
+              <split-pane default-size="70">editor</split-pane>
+              <split-resizer></split-resizer>
+              <split-pane class="terminal" min-size="60px" default-size="30">
+                $ <span style="color:#fff">npm test</span>
+              </split-pane>
+            </split-group>
+          </split-pane>
+          <split-resizer></split-resizer>
+          <split-pane min-size="160px" default-size="22">preview</split-pane>
+        </split-group>
+      </div>
+      <div class="toolbar">
+        <button id="ide-collapse">Collapse sidebar</button>
+        <button id="ide-expand">Expand sidebar</button>
+        <button id="ide-reset">Reset layout</button>
+        <span class="live" id="ide-live"></span>
+      </div>
+    </section>
+
+    <section class="demo">
+      <h2>4. Persisted layout (save-id="demo")</h2>
+      <div class="body">
+        <split-group direction="horizontal" save-id="demo">
+          <split-pane default-size="33">A — drag, then refresh</split-pane>
+          <split-resizer></split-resizer>
+          <split-pane default-size="33">B</split-pane>
+          <split-resizer></split-resizer>
+          <split-pane>C</split-pane>
+        </split-group>
+      </div>
+      <div class="toolbar">
+        <button onclick="localStorage.removeItem('split:demo'); location.reload();">
+          Clear saved layout
+        </button>
+      </div>
+    </section>
+
+    <section class="demo">
+      <h2>5. Controlled — set layout via API</h2>
+      <div class="body">
+        <split-group direction="horizontal" id="ctl">
+          <split-pane>A</split-pane>
+          <split-resizer></split-resizer>
+          <split-pane>B</split-pane>
+          <split-resizer></split-resizer>
+          <split-pane>C</split-pane>
+        </split-group>
+      </div>
+      <div class="toolbar">
+        <button onclick="ctl.setLayout([20,60,20])">20 / 60 / 20</button>
+        <button onclick="ctl.setLayout([50,25,25])">50 / 25 / 25</button>
+        <button onclick="ctl.setLayout([10,10,80])">10 / 10 / 80</button>
+        <span class="live" id="ctl-live"></span>
+      </div>
+    </section>
+
+    <section class="demo rtl">
+      <h2>6. RTL (horizontal axis)</h2>
+      <div class="body">
+        <split-group direction="horizontal" style="direction:rtl">
+          <split-pane>start (right in RTL)</split-pane>
+          <split-resizer></split-resizer>
+          <split-pane>end (left in RTL)</split-pane>
+        </split-group>
+      </div>
+    </section>
+
+    <script type="module">
+      import "/src/index.ts";
+
+      const ide = document.getElementById("ide");
+      const sidebar = ide.querySelector("split-pane");
+      const ideLive = document.getElementById("ide-live");
+      document.getElementById("ide-collapse").onclick = () => sidebar.collapse();
+      document.getElementById("ide-expand").onclick = () => sidebar.expand();
+      document.getElementById("ide-reset").onclick = () =>
+        ide.setLayout([22, 56, 22]);
+      ide.addEventListener("layout-change", (e) => {
+        ideLive.textContent =
+          "layout: [" + e.detail.layout.map((n) => n.toFixed(1)).join(", ") + "]";
+      });
+
+      const ctl = document.getElementById("ctl");
+      window.ctl = ctl;
+      const ctlLive = document.getElementById("ctl-live");
+      ctl.addEventListener("layout-change", (e) => {
+        ctlLive.textContent = "[" + e.detail.layout.map((n) => n.toFixed(1)).join(", ") + "]";
+      });
+    </script>
+  </body>
+</html>

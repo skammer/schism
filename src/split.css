@@ -1,0 +1,77 @@
+/*
+ * @skammer/split — required stylesheet.
+ * Provides hit areas, cursors, and theming hooks. Override via CSS custom properties:
+ *   --split-handle-size      thickness of the resizer hit area (default 6px)
+ *   --split-handle-bg        background color of the resizer
+ *   --split-handle-bg-hover  hover/active background
+ *   --split-handle-color     color of the optional center indicator
+ *   --split-pane-bg          default pane background
+ */
+
+split-group {
+  --split-handle-size: 6px;
+  --split-handle-bg: transparent;
+  --split-handle-bg-hover: color-mix(in srgb, currentColor 12%, transparent);
+  --split-handle-color: currentColor;
+  --split-pane-bg: transparent;
+
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+split-group[direction="vertical"] {
+  flex-direction: column;
+}
+
+/* Panes are flex items; sizes are written via inline `flex-grow`. */
+split-pane {
+  display: block;
+  overflow: hidden;
+  background: var(--split-pane-bg);
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Resizer hit area + cursor. */
+split-resizer {
+  display: block;
+  flex: 0 0 auto;
+  position: relative;
+  background: var(--split-handle-bg);
+  touch-action: none;
+  user-select: none;
+}
+
+split-group[direction="horizontal"] > split-resizer {
+  width: var(--split-handle-size);
+  cursor: ew-resize;
+}
+
+split-group[direction="vertical"] > split-resizer {
+  height: var(--split-handle-size);
+  cursor: ns-resize;
+}
+
+split-resizer:hover,
+split-resizer:focus-visible,
+split-resizer[data-active] {
+  background: var(--split-handle-bg-hover);
+}
+
+split-resizer:focus-visible {
+  outline: 2px solid var(--split-handle-color);
+  outline-offset: -2px;
+}
+
+split-resizer[disabled] {
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* While dragging, suppress pointer events on panes so iframes/buttons don't eat moves. */
+split-group[data-dragging] > split-pane {
+  pointer-events: none;
+}
