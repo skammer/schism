@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@skammer/split — Datastar demo</title>
     <link rel="stylesheet" href="/src/split.css" />
+
+    <!-- Load the web components FIRST so Datastar can call methods on upgraded elements. -->
+    <script type="module" src="/src/index.ts"></script>
     <script
       type="module"
       src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-RC.6/bundles/datastar.js"
     ></script>
+
     <style>
       :root {
         color-scheme: light dark;
@@ -98,22 +102,29 @@
       }
     </style>
   </head>
-  <body data-signals="{layout: [33,33,34], sidebar: 25, sidebarCollapsed: false}">
+  <body
+    data-signals="{
+      s1Layout: [],
+      s2Layout: [],
+      sidebarCollapsed: false,
+      s4Layout: []
+    }"
+  >
     <header>
       <h1>@skammer/split — with Datastar</h1>
       <p>
-        Same components, wired up via Datastar attributes. Drag the handle and
+        Same components, wired up via Datastar attributes. Drag a handle and
         watch the signal update; click a button to set the signal and the
         layout follows.
       </p>
     </header>
 
     <section class="demo">
-      <h2>1. layout-change → signal</h2>
+      <h2>1. layout-change → signal (one-way)</h2>
       <div class="body">
         <split-group
           direction="horizontal"
-          data-on-layout-change="$layout = evt.detail.layout"
+          data-on:layout-change="$s1Layout = evt.detail.layout"
         >
           <split-pane>A</split-pane>
           <split-resizer></split-resizer>
@@ -123,51 +134,52 @@
         </split-group>
       </div>
       <div class="toolbar">
-        <span class="signal">$layout = </span>
-        <span class="signal" data-text="JSON.stringify($layout.map(n=>+n.toFixed(1)))"></span>
+        <span class="signal">$s1Layout = </span>
+        <span
+          class="signal"
+          data-text="$s1Layout.length ? JSON.stringify($s1Layout.map(n => +n.toFixed(1))) : '(waiting…)'"
+        ></span>
       </div>
     </section>
 
     <section class="demo">
-      <h2>2. Signal → setLayout (programmatic control)</h2>
+      <h2>2. Two-way: signal ⇄ layout</h2>
       <div class="body">
         <split-group
-          id="bound"
           direction="horizontal"
-          data-on-layout-change="$layout = evt.detail.layout"
-          data-effect="$bound && $bound.setLayout && $bound.setLayout($layout)"
+          data-on:layout-change="$s2Layout = evt.detail.layout"
+          data-effect="el.setLayout && $s2Layout.length === 3 && el.setLayout($s2Layout)"
         >
-          <split-pane>A</split-pane>
+          <split-pane default-size="20">A</split-pane>
           <split-resizer></split-resizer>
-          <split-pane>B</split-pane>
+          <split-pane default-size="60">B</split-pane>
           <split-resizer></split-resizer>
-          <split-pane>C</split-pane>
+          <split-pane default-size="20">C</split-pane>
         </split-group>
       </div>
       <div class="toolbar">
-        <button data-on-click="$layout = [20, 60, 20]">20 / 60 / 20</button>
-        <button data-on-click="$layout = [50, 25, 25]">50 / 25 / 25</button>
-        <button data-on-click="$layout = [10, 10, 80]">10 / 10 / 80</button>
-        <span class="signal" data-text="JSON.stringify($layout.map(n=>+n.toFixed(1)))"></span>
+        <button data-on:click="$s2Layout = [20, 60, 20]">20 / 60 / 20</button>
+        <button data-on:click="$s2Layout = [50, 25, 25]">50 / 25 / 25</button>
+        <button data-on:click="$s2Layout = [10, 10, 80]">10 / 10 / 80</button>
+        <span class="signal">$s2Layout = </span>
+        <span
+          class="signal"
+          data-text="JSON.stringify($s2Layout.map(n => +n.toFixed(1)))"
+        ></span>
       </div>
     </section>
 
     <section class="demo">
-      <h2>3. Sidebar with signal-driven collapse</h2>
+      <h2>3. Sidebar: collapse/expand events drive a signal</h2>
       <div class="body">
-        <split-group
-          id="sidebar-group"
-          direction="horizontal"
-          data-on-layout-change="$sidebarCollapsed = evt.detail.layout[0] < 1"
-        >
+        <split-group direction="horizontal">
           <split-pane
-            id="sidebar"
             min-size="120px"
             collapsible
             collapsed-size="0"
             default-size="25"
-            data-on-collapse="$sidebarCollapsed = true"
-            data-on-expand="$sidebarCollapsed = false"
+            data-on:collapse="$sidebarCollapsed = true"
+            data-on:expand="$sidebarCollapsed = false"
           >sidebar</split-pane>
           <split-resizer></split-resizer>
           <split-pane>main</split-pane>
@@ -175,20 +187,23 @@
       </div>
       <div class="toolbar">
         <button
-          data-on-click="$sidebarCollapsed ? sidebar.expand() : sidebar.collapse()"
+          data-on:click="
+            const pane = el.closest('.demo').querySelector('split-pane');
+            $sidebarCollapsed ? pane.expand() : pane.collapse();
+          "
           data-text="$sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
         ></button>
-        <span class="signal" data-text="'collapsed=' + $sidebarCollapsed"></span>
+        <span class="signal" data-text="'collapsed = ' + $sidebarCollapsed"></span>
       </div>
     </section>
 
     <section class="demo">
-      <h2>4. Persisted via save-id (independent of signal)</h2>
+      <h2>4. Persisted via save-id (independent of any signal)</h2>
       <div class="body">
         <split-group
           direction="vertical"
           save-id="datastar-demo"
-          data-on-layout-change="$layout = evt.detail.layout"
+          data-on:layout-change="$s4Layout = evt.detail.layout"
         >
           <split-pane>top — drag, refresh, persists</split-pane>
           <split-resizer></split-resizer>
@@ -196,17 +211,15 @@
         </split-group>
       </div>
       <div class="toolbar">
+        <span class="signal">$s4Layout = </span>
+        <span
+          class="signal"
+          data-text="$s4Layout.length ? JSON.stringify($s4Layout.map(n => +n.toFixed(1))) : '(waiting…)'"
+        ></span>
         <button onclick="localStorage.removeItem('split:datastar-demo'); location.reload();">
           Clear saved layout
         </button>
       </div>
     </section>
-
-    <script type="module">
-      import "/src/index.ts";
-      // expose to global so data-effect attribute can call setLayout
-      window.bound = document.getElementById("bound");
-      window.sidebar = document.getElementById("sidebar");
-    </script>
   </body>
 </html>
