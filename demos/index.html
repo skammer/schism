@@ -8,6 +8,19 @@
     <link rel="stylesheet" href="./demo.css" />
   </head>
   <body>
+    <a
+      class="gh-badge"
+      href="https://github.com/skammer/schism"
+      target="_blank"
+      rel="noopener"
+      aria-label="View source on GitHub"
+    >
+      <img
+        src="https://img.shields.io/github/stars/skammer/schism?style=social"
+        alt="Star skammer/schism on GitHub"
+      />
+    </a>
+
     <header class="page-header">
       <h1>Schism — resizable split-pane web components</h1>
       <p>
@@ -18,6 +31,19 @@
         group.
       </p>
     </header>
+
+    <section class="install-info" aria-label="Install">
+      <h2>Install</h2>
+      <pre><code>npm i @skammer/schism</code></pre>
+      <p>Or load directly from <a href="https://www.jsdelivr.com/package/npm/@skammer/schism" target="_blank" rel="noopener">jsDelivr</a> — no build step:</p>
+      <pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@skammer/schism/dist/schism.css" /&gt;
+&lt;script type="module" src="https://cdn.jsdelivr.net/npm/@skammer/schism/dist/schism.js"&gt;&lt;/script&gt;</code></pre>
+    </section>
+
+    <nav class="page-footer">
+      Built with native web components.
+      <a href="./datastar.html">See the Datastar version →</a>
+    </nav>
 
     <main>
       <!-- 1. horizontal -->
@@ -299,11 +325,6 @@
         </details>
       </section>
     </main>
-
-    <footer class="page-footer">
-      Built with native web components.
-      <a href="./datastar.html">See the Datastar version →</a>
-    </footer>
 
     <script type="module">
       import "../src/index.ts";

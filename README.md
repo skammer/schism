@@ -47,7 +47,9 @@ npm install
 npm run dev
 ```
 
-Vite opens `http://localhost:5173/demos/wc-only.html`. Open `http://localhost:5173/demos/datastar.html` for the Datastar version.
+Open `http://localhost:5173/demos/` for the framework-free demo, and `http://localhost:5173/demos/datastar.html` for the Datastar version.
+
+Live demos: <https://skammer.github.io/schism/> (the wc-only demo is the default page; the Datastar demo is at `/datastar.html`).
 
 ## Build
 

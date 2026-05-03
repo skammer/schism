@@ -400,3 +400,53 @@ schism-resizer:focus-visible {
   font-size: 13px;
   color: var(--c-muted);
 }
+
+/* GitHub badge — fixed top-right */
+.gh-badge {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.gh-badge img {
+  display: block;
+}
+
+/* Install info block */
+.install-info {
+  padding: 0 var(--s-xxl);
+  max-width: 1280px;
+  margin: 0 auto var(--s-xl);
+}
+.install-info h2 {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  margin: 0 0 var(--s-sm);
+}
+.install-info pre {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+  background: var(--c-surface-soft);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-sm);
+  padding: var(--s-sm) var(--s-md);
+  margin: 0 0 var(--s-sm);
+  overflow-x: auto;
+  color: var(--c-ink);
+}
+.install-info p {
+  font-size: 13px;
+  color: var(--c-body);
+  margin: var(--s-sm) 0;
+}
+.install-info a {
+  color: inherit;
+}
