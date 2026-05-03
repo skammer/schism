@@ -288,7 +288,6 @@ export class SplitGroupElement extends HTMLElement {
       this.dispatchEvent(
         new CustomEvent("layout-change", {
           detail: { layout: [...next] },
-          bubbles: true,
         }),
       );
       const saveId = this.getAttribute("save-id");

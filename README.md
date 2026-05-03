@@ -120,7 +120,7 @@ group.getPaneSize(pane): number
 | `layout-change`   | `{ layout: number[] }`          | Layout changes (any source) |
 | `dragging-change` | `{ dragging: boolean }`         | Pointer drag start / end    |
 
-`layout-change` bubbles. `resize`, `collapse`, `expand` are dispatched on each `<split-pane>`, see below.
+All events are non-bubbling — attach the listener to the specific `<split-group>` you care about. `resize`, `collapse`, `expand` are dispatched on each `<split-pane>`, see below.
 
 ---
 
