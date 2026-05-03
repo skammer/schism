@@ -189,6 +189,46 @@ main {
   min-width: 200px;
 }
 
+/* ─── code block ───────────────────────────────────────── */
+
+.demo-code {
+  border-top: 1px solid var(--c-hairline);
+  background: var(--c-surface-soft);
+}
+.demo-code summary {
+  padding: var(--s-sm) var(--s-xl);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--c-muted);
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+}
+.demo-code summary::-webkit-details-marker { display: none; }
+.demo-code summary::before {
+  content: "▸";
+  display: inline-block;
+  width: 1em;
+  color: var(--c-border-strong);
+}
+.demo-code[open] summary::before { content: "▾"; }
+.demo-code summary:focus-visible {
+  outline: 2px solid var(--c-info-border);
+  outline-offset: -2px;
+}
+.demo-code pre {
+  margin: 0;
+  padding: 0 var(--s-xl) var(--s-lg);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--c-ink);
+  overflow-x: auto;
+  white-space: pre;
+  tab-size: 2;
+}
+
 /* ─── buttons ──────────────────────────────────────────── */
 
 .button-primary,

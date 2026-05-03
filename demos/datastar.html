@@ -59,6 +59,23 @@
             data-text="$s1Layout.length ? JSON.stringify($s1Layout.map(n => +n.toFixed(1))) : '(waiting…)'"
           ></span>
         </div>
+        <details class="demo-code">
+          <summary>view code</summary>
+          <pre>&lt;body data-signals="{s1Layout: []}"&gt;
+  &lt;schism-group
+    direction="horizontal"
+    data-on:layout-change="$s1Layout = evt.detail.layout"
+  &gt;
+    &lt;schism-pane&gt;A&lt;/schism-pane&gt;
+    &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+    &lt;schism-pane&gt;B&lt;/schism-pane&gt;
+    &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+    &lt;schism-pane&gt;C&lt;/schism-pane&gt;
+  &lt;/schism-group&gt;
+
+  &lt;span data-text="JSON.stringify($s1Layout)"&gt;&lt;/span&gt;
+&lt;/body&gt;</pre>
+        </details>
       </section>
 
       <!-- 2. two-way -->
@@ -91,6 +108,29 @@
             data-text="$s2Layout.length ? JSON.stringify($s2Layout.map(n => +n.toFixed(1))) : '(waiting…)'"
           ></span>
         </div>
+        <details class="demo-code">
+          <summary>view code</summary>
+          <pre>&lt;body data-signals="{s2Layout: []}"&gt;
+  &lt;schism-group
+    direction="horizontal"
+    data-on:layout-change="$s2Layout = evt.detail.layout"
+    data-effect="el.setLayout &amp;&amp; $s2Layout.length === 3
+                 &amp;&amp; el.setLayout($s2Layout)"
+  &gt;
+    &lt;schism-pane default-size="20"&gt;A&lt;/schism-pane&gt;
+    &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+    &lt;schism-pane default-size="60"&gt;B&lt;/schism-pane&gt;
+    &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+    &lt;schism-pane default-size="20"&gt;C&lt;/schism-pane&gt;
+  &lt;/schism-group&gt;
+
+  &lt;button data-on:click="$s2Layout = [20, 60, 20]"&gt;20 / 60 / 20&lt;/button&gt;
+  &lt;button data-on:click="$s2Layout = [50, 25, 25]"&gt;50 / 25 / 25&lt;/button&gt;
+&lt;/body&gt;
+
+&lt;!-- inside data-effect, `el` is the &lt;schism-group&gt;.
+     length===3 guard avoids running before the WC has scanned. --&gt;</pre>
+        </details>
       </section>
 
       <!-- 3. sidebar -->
@@ -134,6 +174,28 @@
           <span class="signal-label">$sidebarCollapsed = </span>
           <span class="signal-value" data-text="$sidebarCollapsed"></span>
         </div>
+        <details class="demo-code">
+          <summary>view code</summary>
+          <pre>&lt;body data-signals="{sidebarCollapsed: false}"&gt;
+  &lt;schism-group direction="horizontal"&gt;
+    &lt;schism-pane
+      min-size="120px" collapsible default-size="25"
+      data-on:collapse="$sidebarCollapsed = true"
+      data-on:expand="$sidebarCollapsed = false"
+    &gt;sidebar&lt;/schism-pane&gt;
+    &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+    &lt;schism-pane&gt;main&lt;/schism-pane&gt;
+  &lt;/schism-group&gt;
+
+  &lt;button
+    data-on:click="
+      const pane = el.closest('.demo').querySelector('schism-pane');
+      $sidebarCollapsed ? pane.expand() : pane.collapse();
+    "
+    data-text="$sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+  &gt;&lt;/button&gt;
+&lt;/body&gt;</pre>
+        </details>
       </section>
 
       <!-- 4. persisted independent of signal -->
@@ -173,6 +235,24 @@
             data-text="$s4Layout.length ? JSON.stringify($s4Layout.map(n => +n.toFixed(1))) : '(waiting…)'"
           ></span>
         </div>
+        <details class="demo-code">
+          <summary>view code</summary>
+          <pre>&lt;body data-signals="{s4Layout: []}"&gt;
+  &lt;schism-group
+    direction="vertical"
+    save-id="datastar-demo"
+    data-on:layout-change="$s4Layout = evt.detail.layout"
+  &gt;
+    &lt;schism-pane&gt;top&lt;/schism-pane&gt;
+    &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+    &lt;schism-pane&gt;bottom&lt;/schism-pane&gt;
+  &lt;/schism-group&gt;
+&lt;/body&gt;
+
+&lt;!-- save-id is independent of any signal.
+     localStorage["schism:datastar-demo"] is updated on drag,
+     debounced 100 ms, and re-read on next mount. --&gt;</pre>
+        </details>
       </section>
     </main>
 

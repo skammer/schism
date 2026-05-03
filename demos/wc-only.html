@@ -47,6 +47,16 @@
             </schism-pane>
           </schism-group>
         </div>
+        <details class="demo-code">
+          <summary>view code</summary>
+          <pre>&lt;schism-group direction="horizontal"&gt;
+  &lt;schism-pane default-size="30"&gt;A&lt;/schism-pane&gt;
+  &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+  &lt;schism-pane&gt;B&lt;/schism-pane&gt;
+  &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+  &lt;schism-pane default-size="20"&gt;C&lt;/schism-pane&gt;
+&lt;/schism-group&gt;</pre>
+        </details>
       </section>
 
       <!-- 2. vertical -->
@@ -68,6 +78,14 @@
             </schism-pane>
           </schism-group>
         </div>
+        <details class="demo-code">
+          <summary>view code</summary>
+          <pre>&lt;schism-group direction="vertical"&gt;
+  &lt;schism-pane&gt;top&lt;/schism-pane&gt;
+  &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+  &lt;schism-pane&gt;bottom&lt;/schism-pane&gt;
+&lt;/schism-group&gt;</pre>
+        </details>
       </section>
 
       <!-- 3. nested IDE -->
@@ -126,6 +144,40 @@
           <span class="signal-label">inner = </span>
           <span class="signal-value" id="ide-inner-live">—</span>
         </div>
+        <details class="demo-code">
+          <summary>view code</summary>
+          <pre>&lt;schism-group direction="horizontal" id="ide"&gt;
+  &lt;schism-pane min-size="160px" max-size="40%"
+               default-size="22" collapsible&gt;
+    sidebar
+  &lt;/schism-pane&gt;
+  &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+
+  &lt;schism-pane&gt;
+    &lt;schism-group direction="vertical" id="ide-inner"&gt;
+      &lt;schism-pane default-size="70"&gt;editor&lt;/schism-pane&gt;
+      &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+      &lt;schism-pane min-size="60px"&gt;terminal&lt;/schism-pane&gt;
+    &lt;/schism-group&gt;
+  &lt;/schism-pane&gt;
+
+  &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+  &lt;schism-pane min-size="160px" default-size="22"&gt;preview&lt;/schism-pane&gt;
+&lt;/schism-group&gt;
+
+&lt;script&gt;
+  const ide = document.getElementById("ide");
+  const sidebar = ide.querySelector("schism-pane");
+
+  sidebar.collapse();             // hide
+  sidebar.expand();               // restore last expanded size
+  ide.setLayout([22, 56, 22]);    // outer
+  ideInner.setLayout([70, 30]);   // inner
+
+  ide.addEventListener("layout-change",
+    (e) =&gt; console.log(e.detail.layout));
+&lt;/script&gt;</pre>
+        </details>
       </section>
 
       <!-- 4. persisted -->
@@ -160,6 +212,18 @@
             Clear saved layout
           </button>
         </div>
+        <details class="demo-code">
+          <summary>view code</summary>
+          <pre>&lt;schism-group direction="horizontal" save-id="demo"&gt;
+  &lt;schism-pane default-size="33"&gt;A&lt;/schism-pane&gt;
+  &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+  &lt;schism-pane default-size="33"&gt;B&lt;/schism-pane&gt;
+  &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+  &lt;schism-pane&gt;C&lt;/schism-pane&gt;
+&lt;/schism-group&gt;
+
+&lt;!-- saved at localStorage["schism:demo"], debounced 100 ms --&gt;</pre>
+        </details>
       </section>
 
       <!-- 5. controlled -->
@@ -190,6 +254,19 @@
           <span class="signal-label">layout = </span>
           <span class="signal-value" id="ctl-live">—</span>
         </div>
+        <details class="demo-code">
+          <summary>view code</summary>
+          <pre>&lt;schism-group id="ctl" direction="horizontal"&gt;
+  &lt;schism-pane&gt;A&lt;/schism-pane&gt;
+  &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+  &lt;schism-pane&gt;B&lt;/schism-pane&gt;
+  &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+  &lt;schism-pane&gt;C&lt;/schism-pane&gt;
+&lt;/schism-group&gt;
+
+&lt;button onclick="ctl.setLayout([20, 60, 20])"&gt;20 / 60 / 20&lt;/button&gt;
+&lt;button onclick="ctl.setLayout([50, 25, 25])"&gt;50 / 25 / 25&lt;/button&gt;</pre>
+        </details>
       </section>
 
       <!-- 6. RTL -->
@@ -211,6 +288,15 @@
             </schism-pane>
           </schism-group>
         </div>
+        <details class="demo-code">
+          <summary>view code</summary>
+          <pre>&lt;!-- direction: rtl on the group, an ancestor, or the document --&gt;
+&lt;schism-group direction="horizontal" style="direction: rtl"&gt;
+  &lt;schism-pane&gt;start (right in RTL)&lt;/schism-pane&gt;
+  &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
+  &lt;schism-pane&gt;end (left in RTL)&lt;/schism-pane&gt;
+&lt;/schism-group&gt;</pre>
+        </details>
       </section>
     </main>
 
