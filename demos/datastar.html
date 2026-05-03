@@ -3,104 +3,16 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@skammer/schism — Datastar demo</title>
+    <title>Schism — Datastar demo</title>
     <link rel="stylesheet" href="/src/schism.css" />
+    <link rel="stylesheet" href="/demos/demo.css" />
 
-    <!-- Load the web components FIRST so Datastar can call methods on upgraded elements. -->
+    <!-- Load Schism FIRST so Datastar can call methods on upgraded elements. -->
     <script type="module" src="/src/index.ts"></script>
     <script
       type="module"
       src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-RC.6/bundles/datastar.js"
     ></script>
-
-    <style>
-      :root {
-        color-scheme: light dark;
-        font-family: ui-sans-serif, system-ui, sans-serif;
-        --panel: light-dark(#fff, #1c1c1e);
-        --panel-2: light-dark(#f4f4f7, #2a2a2e);
-        --panel-3: light-dark(#e6e6eb, #3a3a3f);
-        --ink: light-dark(#222, #eee);
-        --ink-dim: light-dark(#666, #999);
-      }
-      body {
-        margin: 0;
-        background: light-dark(#fafafa, #111);
-        color: var(--ink);
-      }
-      header {
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid var(--panel-3);
-      }
-      header h1 {
-        margin: 0 0 0.25rem;
-        font-size: 1.1rem;
-      }
-      header p {
-        margin: 0;
-        color: var(--ink-dim);
-        font-size: 0.85rem;
-      }
-      .demo {
-        margin: 1.25rem;
-        border: 1px solid var(--panel-3);
-        border-radius: 8px;
-        background: var(--panel);
-        overflow: hidden;
-      }
-      .demo > h2 {
-        margin: 0;
-        padding: 0.6rem 0.9rem;
-        font-size: 0.95rem;
-        background: var(--panel-2);
-        border-bottom: 1px solid var(--panel-3);
-      }
-      .demo > .body {
-        height: 320px;
-      }
-      schism-pane {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.9rem;
-        color: var(--ink-dim);
-        background: var(--panel);
-      }
-      schism-pane:nth-child(odd) {
-        background: var(--panel-2);
-      }
-      .toolbar {
-        padding: 0.5rem 0.9rem;
-        background: var(--panel-2);
-        border-top: 1px solid var(--panel-3);
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        font-size: 0.85rem;
-        align-items: center;
-      }
-      button {
-        font: inherit;
-        padding: 0.25rem 0.6rem;
-        border: 1px solid var(--panel-3);
-        border-radius: 5px;
-        background: var(--panel);
-        color: inherit;
-        cursor: pointer;
-      }
-      .signal {
-        font-family: ui-monospace, monospace;
-        font-size: 0.8rem;
-        color: var(--ink-dim);
-      }
-      kbd {
-        font: 0.8em ui-monospace, monospace;
-        padding: 0 0.35em;
-        border: 1px solid var(--panel-3);
-        border-radius: 3px;
-        background: var(--panel-2);
-      }
-    </style>
   </head>
   <body
     data-signals="{
@@ -110,116 +22,163 @@
       s4Layout: []
     }"
   >
-    <header>
-      <h1>@skammer/schism — with Datastar</h1>
+    <header class="page-header">
+      <h1>Schism — with Datastar signals</h1>
       <p>
-        Same components, wired up via Datastar attributes. Drag a handle and
-        watch the signal update; click a button to set the signal and the
+        Same components, wired to Datastar via standard <code>data-on:*</code>,
+        <code>data-effect</code>, and <code>data-text</code> attributes. Drag a
+        handle to update the signal; click a button to set the signal and the
         layout follows.
       </p>
     </header>
 
-    <section class="demo">
-      <h2>1. layout-change → signal (one-way)</h2>
-      <div class="body">
-        <schism-group
-          direction="horizontal"
-          data-on:layout-change="$s1Layout = evt.detail.layout"
-        >
-          <schism-pane>A</schism-pane>
-          <schism-resizer></schism-resizer>
-          <schism-pane>B</schism-pane>
-          <schism-resizer></schism-resizer>
-          <schism-pane>C</schism-pane>
-        </schism-group>
-      </div>
-      <div class="toolbar">
-        <span class="signal">$s1Layout = </span>
-        <span
-          class="signal"
-          data-text="$s1Layout.length ? JSON.stringify($s1Layout.map(n => +n.toFixed(1))) : '(waiting…)'"
-        ></span>
-      </div>
-    </section>
+    <main>
+      <!-- 1. layout-change → signal -->
+      <section class="demo">
+        <div class="demo-head">
+          <h2>One-way: layout-change → signal</h2>
+          <p>The split-group emits <code>layout-change</code>; Datastar copies
+            <code>evt.detail.layout</code> into <code>$s1Layout</code>.</p>
+        </div>
+        <div class="demo-frame">
+          <schism-group
+            direction="horizontal"
+            data-on:layout-change="$s1Layout = evt.detail.layout"
+          >
+            <schism-pane class="pane pane--peach"><span class="pane-label">A</span></schism-pane>
+            <schism-resizer></schism-resizer>
+            <schism-pane class="pane pane--mint"><span class="pane-label">B</span></schism-pane>
+            <schism-resizer></schism-resizer>
+            <schism-pane class="pane pane--cream"><span class="pane-label">C</span></schism-pane>
+          </schism-group>
+        </div>
+        <div class="demo-toolbar">
+          <span class="signal-label">$s1Layout = </span>
+          <span
+            class="signal-value"
+            data-text="$s1Layout.length ? JSON.stringify($s1Layout.map(n => +n.toFixed(1))) : '(waiting…)'"
+          ></span>
+        </div>
+      </section>
 
-    <section class="demo">
-      <h2>2. Two-way: signal ⇄ layout</h2>
-      <div class="body">
-        <schism-group
-          direction="horizontal"
-          data-on:layout-change="$s2Layout = evt.detail.layout"
-          data-effect="el.setLayout && $s2Layout.length === 3 && el.setLayout($s2Layout)"
-        >
-          <schism-pane default-size="20">A</schism-pane>
-          <schism-resizer></schism-resizer>
-          <schism-pane default-size="60">B</schism-pane>
-          <schism-resizer></schism-resizer>
-          <schism-pane default-size="20">C</schism-pane>
-        </schism-group>
-      </div>
-      <div class="toolbar">
-        <button data-on:click="$s2Layout = [20, 60, 20]">20 / 60 / 20</button>
-        <button data-on:click="$s2Layout = [50, 25, 25]">50 / 25 / 25</button>
-        <button data-on:click="$s2Layout = [10, 10, 80]">10 / 10 / 80</button>
-        <span class="signal">$s2Layout = </span>
-        <span
-          class="signal"
-          data-text="JSON.stringify($s2Layout.map(n => +n.toFixed(1)))"
-        ></span>
-      </div>
-    </section>
+      <!-- 2. two-way -->
+      <section class="demo">
+        <div class="demo-head">
+          <h2>Two-way: signal ⇄ layout</h2>
+          <p><code>data-effect</code> calls <code>el.setLayout($s2Layout)</code>
+            whenever the signal changes; the buttons just write to the signal.</p>
+        </div>
+        <div class="demo-frame">
+          <schism-group
+            direction="horizontal"
+            data-on:layout-change="$s2Layout = evt.detail.layout"
+            data-effect="el.setLayout && $s2Layout.length === 3 && el.setLayout($s2Layout)"
+          >
+            <schism-pane class="pane" default-size="20"><span class="pane-label">A</span></schism-pane>
+            <schism-resizer></schism-resizer>
+            <schism-pane class="pane pane--soft" default-size="60"><span class="pane-label">B</span></schism-pane>
+            <schism-resizer></schism-resizer>
+            <schism-pane class="pane" default-size="20"><span class="pane-label">C</span></schism-pane>
+          </schism-group>
+        </div>
+        <div class="demo-toolbar">
+          <button class="button-primary" data-on:click="$s2Layout = [20, 60, 20]">20 / 60 / 20</button>
+          <button class="button-secondary" data-on:click="$s2Layout = [50, 25, 25]">50 / 25 / 25</button>
+          <button class="button-secondary" data-on:click="$s2Layout = [10, 10, 80]">10 / 10 / 80</button>
+          <span class="signal-label">$s2Layout = </span>
+          <span
+            class="signal-value"
+            data-text="$s2Layout.length ? JSON.stringify($s2Layout.map(n => +n.toFixed(1))) : '(waiting…)'"
+          ></span>
+        </div>
+      </section>
 
-    <section class="demo">
-      <h2>3. Sidebar: collapse/expand events drive a signal</h2>
-      <div class="body">
-        <schism-group direction="horizontal">
-          <schism-pane
-            min-size="120px"
-            collapsible
-            collapsed-size="0"
-            default-size="25"
-            data-on:collapse="$sidebarCollapsed = true"
-            data-on:expand="$sidebarCollapsed = false"
-          >sidebar</schism-pane>
-          <schism-resizer></schism-resizer>
-          <schism-pane>main</schism-pane>
-        </schism-group>
-      </div>
-      <div class="toolbar">
-        <button
-          data-on:click="
-            const pane = el.closest('.demo').querySelector('schism-pane');
-            $sidebarCollapsed ? pane.expand() : pane.collapse();
-          "
-          data-text="$sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
-        ></button>
-        <span class="signal" data-text="'collapsed = ' + $sidebarCollapsed"></span>
-      </div>
-    </section>
+      <!-- 3. sidebar -->
+      <section class="demo">
+        <div class="demo-head">
+          <h2>Collapsible sidebar — events drive a signal</h2>
+          <p><code>data-on:collapse</code> and <code>data-on:expand</code> on the
+            pane keep <code>$sidebarCollapsed</code> in sync; the button calls
+            the imperative API.</p>
+        </div>
+        <div class="demo-frame">
+          <schism-group direction="horizontal">
+            <schism-pane
+              class="pane pane--forest"
+              min-size="120px"
+              collapsible
+              collapsed-size="0"
+              default-size="25"
+              data-on:collapse="$sidebarCollapsed = true"
+              data-on:expand="$sidebarCollapsed = false"
+            >
+              <span class="pane-label">Sidebar</span>
+              <p class="pane-title">Forest signature surface</p>
+            </schism-pane>
+            <schism-resizer></schism-resizer>
+            <schism-pane class="pane">
+              <span class="pane-label">Main</span>
+              <p class="pane-title">Workspace</p>
+            </schism-pane>
+          </schism-group>
+        </div>
+        <div class="demo-toolbar">
+          <button
+            class="button-primary"
+            data-on:click="
+              const pane = el.closest('.demo').querySelector('schism-pane');
+              $sidebarCollapsed ? pane.expand() : pane.collapse();
+            "
+            data-text="$sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+          ></button>
+          <span class="signal-label">$sidebarCollapsed = </span>
+          <span class="signal-value" data-text="$sidebarCollapsed"></span>
+        </div>
+      </section>
 
-    <section class="demo">
-      <h2>4. Persisted via save-id (independent of any signal)</h2>
-      <div class="body">
-        <schism-group
-          direction="vertical"
-          save-id="datastar-demo"
-          data-on:layout-change="$s4Layout = evt.detail.layout"
-        >
-          <schism-pane>top — drag, refresh, persists</schism-pane>
-          <schism-resizer></schism-resizer>
-          <schism-pane>bottom</schism-pane>
-        </schism-group>
-      </div>
-      <div class="toolbar">
-        <span class="signal">$s4Layout = </span>
-        <span
-          class="signal"
-          data-text="$s4Layout.length ? JSON.stringify($s4Layout.map(n => +n.toFixed(1))) : '(waiting…)'"
-        ></span>
-        <button onclick="localStorage.removeItem('schism:datastar-demo'); location.reload();">
-          Clear saved layout
-        </button>
-      </div>
-    </section>
+      <!-- 4. persisted independent of signal -->
+      <section class="demo">
+        <div class="demo-head">
+          <h2>Persisted via <code>save-id</code></h2>
+          <p>Persistence is independent of any signal. The signal here is just
+            an observer.</p>
+        </div>
+        <div class="demo-frame">
+          <schism-group
+            direction="vertical"
+            save-id="datastar-demo"
+            data-on:layout-change="$s4Layout = evt.detail.layout"
+          >
+            <schism-pane class="pane pane--cream">
+              <span class="pane-label">Top</span>
+              <p class="pane-title">Drag — refresh — sizes restore</p>
+            </schism-pane>
+            <schism-resizer></schism-resizer>
+            <schism-pane class="pane">
+              <span class="pane-label">Bottom</span>
+              <p class="pane-title">Independent of any signal</p>
+            </schism-pane>
+          </schism-group>
+        </div>
+        <div class="demo-toolbar">
+          <button
+            class="button-secondary"
+            onclick="localStorage.removeItem('schism:datastar-demo'); location.reload();"
+          >
+            Clear saved layout
+          </button>
+          <span class="signal-label">$s4Layout = </span>
+          <span
+            class="signal-value"
+            data-text="$s4Layout.length ? JSON.stringify($s4Layout.map(n => +n.toFixed(1))) : '(waiting…)'"
+          ></span>
+        </div>
+      </section>
+    </main>
+
+    <footer class="page-footer">
+      Datastar v1.0.0-RC.6 + Schism, no plugin required.
+      <a href="/demos/wc-only.html">See the framework-free version →</a>
+    </footer>
   </body>
 </html>

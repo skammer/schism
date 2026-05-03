@@ -3,268 +3,251 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@skammer/schism — Web Components demo</title>
+    <title>Schism — web components demo</title>
     <link rel="stylesheet" href="/src/schism.css" />
-    <style>
-      :root {
-        color-scheme: light dark;
-        font-family: ui-sans-serif, system-ui, sans-serif;
-        --panel: light-dark(#fff, #1c1c1e);
-        --panel-2: light-dark(#f4f4f7, #2a2a2e);
-        --panel-3: light-dark(#e6e6eb, #3a3a3f);
-        --ink: light-dark(#222, #eee);
-        --ink-dim: light-dark(#666, #999);
-        --accent: light-dark(#3b82f6, #60a5fa);
-      }
-      body {
-        margin: 0;
-        background: light-dark(#fafafa, #111);
-        color: var(--ink);
-      }
-      header {
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid var(--panel-3);
-      }
-      header h1 {
-        margin: 0 0 0.25rem;
-        font-size: 1.1rem;
-      }
-      header p {
-        margin: 0;
-        color: var(--ink-dim);
-        font-size: 0.85rem;
-      }
-      .demo {
-        margin: 1.25rem;
-        border: 1px solid var(--panel-3);
-        border-radius: 8px;
-        background: var(--panel);
-        overflow: hidden;
-      }
-      .demo > h2 {
-        margin: 0;
-        padding: 0.6rem 0.9rem;
-        font-size: 0.95rem;
-        background: var(--panel-2);
-        border-bottom: 1px solid var(--panel-3);
-      }
-      .demo > .body {
-        height: 320px;
-      }
-      schism-pane {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.9rem;
-        color: var(--ink-dim);
-        background: var(--panel);
-      }
-      schism-pane:nth-child(odd) {
-        background: var(--panel-2);
-      }
-      schism-pane[data-collapsed] {
-        color: transparent;
-      }
-      .toolbar {
-        padding: 0.5rem 0.9rem;
-        background: var(--panel-2);
-        border-top: 1px solid var(--panel-3);
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        font-size: 0.85rem;
-      }
-      button {
-        font: inherit;
-        padding: 0.25rem 0.6rem;
-        border: 1px solid var(--panel-3);
-        border-radius: 5px;
-        background: var(--panel);
-        color: inherit;
-        cursor: pointer;
-      }
-      button:hover {
-        background: var(--panel-2);
-      }
-      kbd {
-        font: 0.8em ui-monospace, monospace;
-        padding: 0 0.35em;
-        border: 1px solid var(--panel-3);
-        border-radius: 3px;
-        background: var(--panel-2);
-      }
-      .ide schism-pane {
-        background: var(--panel);
-      }
-      .ide .file-tree {
-        background: var(--panel-2);
-        align-items: flex-start;
-        padding: 0.6rem;
-        font-family: ui-monospace, monospace;
-        font-size: 0.8rem;
-        white-space: pre;
-        color: var(--ink);
-      }
-      .ide .terminal {
-        background: light-dark(#111, #000);
-        color: light-dark(#0f0, #6f6);
-        font-family: ui-monospace, monospace;
-        align-items: flex-start;
-        padding: 0.6rem;
-      }
-      [data-rtl="true"] .demo.rtl {
-        direction: rtl;
-      }
-      .live {
-        font-family: ui-monospace, monospace;
-        font-size: 0.8rem;
-        color: var(--ink-dim);
-      }
-    </style>
+    <link rel="stylesheet" href="/demos/demo.css" />
   </head>
   <body>
-    <header>
-      <h1>@skammer/schism — Web Components</h1>
+    <header class="page-header">
+      <h1>Schism — resizable split-pane web components</h1>
       <p>
-        Drag handles to resize. Use <kbd>Tab</kbd> to focus a handle, then
-        <kbd>←/→</kbd> or <kbd>↑/↓</kbd> to resize, <kbd>Shift</kbd> for big steps,
-        <kbd>Home</kbd>/<kbd>End</kbd> for limits, <kbd>Enter</kbd> to toggle
-        collapse, <kbd>F6</kbd> to cycle handles.
+        Drag a handle to resize. Use <kbd>Tab</kbd> to focus a handle, then
+        <kbd>←/→</kbd> or <kbd>↑/↓</kbd> to resize. Hold <kbd>Shift</kbd> for
+        big steps, <kbd>Home</kbd>/<kbd>End</kbd> for limits, <kbd>Enter</kbd>
+        to toggle a collapsible pane, <kbd>F6</kbd> to cycle handles within a
+        group.
       </p>
     </header>
 
-    <section class="demo">
-      <h2>1. Horizontal — basic</h2>
-      <div class="body">
-        <schism-group direction="horizontal">
-          <schism-pane default-size="30">A</schism-pane>
-          <schism-resizer></schism-resizer>
-          <schism-pane>B</schism-pane>
-          <schism-resizer></schism-resizer>
-          <schism-pane default-size="20">C</schism-pane>
-        </schism-group>
-      </div>
-    </section>
+    <main>
+      <!-- 1. horizontal -->
+      <section class="demo">
+        <div class="demo-head">
+          <h2>Horizontal — three panes</h2>
+          <p>Default split: a leading 30%, a remainder, and a trailing 20%.</p>
+        </div>
+        <div class="demo-frame">
+          <schism-group direction="horizontal">
+            <schism-pane class="pane pane--soft" default-size="30">
+              <span class="pane-label">A</span>
+              <p class="pane-title">Files</p>
+              <p class="pane-body">30% by default. Pull the handle to resize.</p>
+            </schism-pane>
+            <schism-resizer></schism-resizer>
+            <schism-pane class="pane">
+              <span class="pane-label">B</span>
+              <p class="pane-title">Editor</p>
+              <p class="pane-body">Takes whatever's left.</p>
+            </schism-pane>
+            <schism-resizer></schism-resizer>
+            <schism-pane class="pane pane--cream" default-size="20">
+              <span class="pane-label">C</span>
+              <p class="pane-title">Preview</p>
+              <p class="pane-body">20% by default.</p>
+            </schism-pane>
+          </schism-group>
+        </div>
+      </section>
 
-    <section class="demo">
-      <h2>2. Vertical</h2>
-      <div class="body">
-        <schism-group direction="vertical">
-          <schism-pane>top</schism-pane>
-          <schism-resizer></schism-resizer>
-          <schism-pane>bottom</schism-pane>
-        </schism-group>
-      </div>
-    </section>
+      <!-- 2. vertical -->
+      <section class="demo">
+        <div class="demo-head">
+          <h2>Vertical</h2>
+          <p>Same model, stacked instead of side-by-side.</p>
+        </div>
+        <div class="demo-frame">
+          <schism-group direction="vertical">
+            <schism-pane class="pane pane--peach">
+              <span class="pane-label">Top</span>
+              <p class="pane-title">A signature peach surface</p>
+            </schism-pane>
+            <schism-resizer></schism-resizer>
+            <schism-pane class="pane pane--mint">
+              <span class="pane-label">Bottom</span>
+              <p class="pane-title">A signature mint surface</p>
+            </schism-pane>
+          </schism-group>
+        </div>
+      </section>
 
-    <section class="demo">
-      <h2>3. Nested — IDE-style layout (px min-sizes, collapsible sidebar)</h2>
-      <div class="body ide">
-        <schism-group direction="horizontal" id="ide">
-          <schism-pane
-            class="file-tree"
-            min-size="120px"
-            max-size="40%"
-            default-size="22"
-            collapsible
-            collapsed-size="0"
-          >
-            <span>src/
+      <!-- 3. nested IDE -->
+      <section class="demo">
+        <div class="demo-head">
+          <h2>Nested — IDE layout, px constraints, collapsible sidebar</h2>
+          <p>
+            Sidebar: <code>min-size="160px"</code>, <code>max-size="40%"</code>,
+            collapsible. Inner vertical group splits the editor and a 60px-min
+            terminal.
+          </p>
+        </div>
+        <div class="demo-frame demo-frame--tall">
+          <schism-group direction="horizontal" id="ide">
+            <schism-pane
+              class="pane pane--soft pane--mono"
+              min-size="160px"
+              max-size="40%"
+              default-size="22"
+              collapsible
+              collapsed-size="0"
+            >src/
   index.ts
   app.tsx
   utils/
-    fmt.ts</span>
-          </schism-pane>
-          <schism-resizer></schism-resizer>
-          <schism-pane>
-            <schism-group direction="vertical" style="width:100%;height:100%">
-              <schism-pane default-size="70">editor</schism-pane>
-              <schism-resizer></schism-resizer>
-              <schism-pane class="terminal" min-size="60px" default-size="30">
-                $ <span style="color:#fff">npm test</span>
-              </schism-pane>
-            </schism-group>
-          </schism-pane>
-          <schism-resizer></schism-resizer>
-          <schism-pane min-size="160px" default-size="22">preview</schism-pane>
-        </schism-group>
-      </div>
-      <div class="toolbar">
-        <button id="ide-collapse">Collapse sidebar</button>
-        <button id="ide-expand">Expand sidebar</button>
-        <button id="ide-reset">Reset layout</button>
-        <span class="live" id="ide-live"></span>
-      </div>
-    </section>
+    fmt.ts</schism-pane>
+            <schism-resizer></schism-resizer>
+            <schism-pane>
+              <schism-group direction="vertical" id="ide-inner" style="height:100%">
+                <schism-pane class="pane" default-size="70">
+                  <span class="pane-label">Editor</span>
+                  <p class="pane-title">main.ts</p>
+                  <p class="pane-body">Drag the inner handle to resize the terminal.</p>
+                </schism-pane>
+                <schism-resizer></schism-resizer>
+                <schism-pane class="pane pane--dark pane--mono" min-size="60px" default-size="30">
+                  <span class="pane-label">Terminal</span>
+                  <p class="pane-body" style="opacity:0.95">$ npm run build &nbsp;✓ schism.js&nbsp;31&nbsp;KB</p>
+                </schism-pane>
+              </schism-group>
+            </schism-pane>
+            <schism-resizer></schism-resizer>
+            <schism-pane class="pane pane--cream" min-size="160px" default-size="22">
+              <span class="pane-label">Preview</span>
+              <p class="pane-title">Output</p>
+              <p class="pane-body">Live render area.</p>
+            </schism-pane>
+          </schism-group>
+        </div>
+        <div class="demo-toolbar">
+          <button class="button-primary" id="ide-collapse">Collapse sidebar</button>
+          <button class="button-secondary" id="ide-expand">Expand sidebar</button>
+          <button class="button-secondary" id="ide-reset">Reset layout</button>
+          <span class="signal-label">outer = </span>
+          <span class="signal-value" id="ide-outer-live">—</span>
+          <span class="signal-label">inner = </span>
+          <span class="signal-value" id="ide-inner-live">—</span>
+        </div>
+      </section>
 
-    <section class="demo">
-      <h2>4. Persisted layout (save-id="demo")</h2>
-      <div class="body">
-        <schism-group direction="horizontal" save-id="demo">
-          <schism-pane default-size="33">A — drag, then refresh</schism-pane>
-          <schism-resizer></schism-resizer>
-          <schism-pane default-size="33">B</schism-pane>
-          <schism-resizer></schism-resizer>
-          <schism-pane>C</schism-pane>
-        </schism-group>
-      </div>
-      <div class="toolbar">
-        <button onclick="localStorage.removeItem('schism:demo'); location.reload();">
-          Clear saved layout
-        </button>
-      </div>
-    </section>
+      <!-- 4. persisted -->
+      <section class="demo">
+        <div class="demo-head">
+          <h2>Persisted — <code>save-id="demo"</code></h2>
+          <p>Layout is saved to localStorage on drag, restored on reload.</p>
+        </div>
+        <div class="demo-frame">
+          <schism-group direction="horizontal" save-id="demo">
+            <schism-pane class="pane pane--mint" default-size="33">
+              <span class="pane-label">A</span>
+              <p class="pane-title">Drag, refresh.</p>
+            </schism-pane>
+            <schism-resizer></schism-resizer>
+            <schism-pane class="pane pane--yellow" default-size="33">
+              <span class="pane-label">B</span>
+              <p class="pane-title">Sizes restore.</p>
+            </schism-pane>
+            <schism-resizer></schism-resizer>
+            <schism-pane class="pane pane--mustard">
+              <span class="pane-label">C</span>
+              <p class="pane-title">Per shape and constraints.</p>
+            </schism-pane>
+          </schism-group>
+        </div>
+        <div class="demo-toolbar">
+          <button
+            class="button-secondary"
+            onclick="localStorage.removeItem('schism:demo'); location.reload();"
+          >
+            Clear saved layout
+          </button>
+        </div>
+      </section>
 
-    <section class="demo">
-      <h2>5. Controlled — set layout via API</h2>
-      <div class="body">
-        <schism-group direction="horizontal" id="ctl">
-          <schism-pane>A</schism-pane>
-          <schism-resizer></schism-resizer>
-          <schism-pane>B</schism-pane>
-          <schism-resizer></schism-resizer>
-          <schism-pane>C</schism-pane>
-        </schism-group>
-      </div>
-      <div class="toolbar">
-        <button onclick="ctl.setLayout([20,60,20])">20 / 60 / 20</button>
-        <button onclick="ctl.setLayout([50,25,25])">50 / 25 / 25</button>
-        <button onclick="ctl.setLayout([10,10,80])">10 / 10 / 80</button>
-        <span class="live" id="ctl-live"></span>
-      </div>
-    </section>
+      <!-- 5. controlled -->
+      <section class="demo">
+        <div class="demo-head">
+          <h2>Controlled — set the layout via API</h2>
+          <p><code>group.setLayout([…])</code> validates against the panes' constraints.</p>
+        </div>
+        <div class="demo-frame">
+          <schism-group direction="horizontal" id="ctl">
+            <schism-pane class="pane">
+              <span class="pane-label">A</span>
+            </schism-pane>
+            <schism-resizer></schism-resizer>
+            <schism-pane class="pane pane--soft">
+              <span class="pane-label">B</span>
+            </schism-pane>
+            <schism-resizer></schism-resizer>
+            <schism-pane class="pane">
+              <span class="pane-label">C</span>
+            </schism-pane>
+          </schism-group>
+        </div>
+        <div class="demo-toolbar">
+          <button class="button-primary" onclick="ctl.setLayout([20,60,20])">20 / 60 / 20</button>
+          <button class="button-secondary" onclick="ctl.setLayout([50,25,25])">50 / 25 / 25</button>
+          <button class="button-secondary" onclick="ctl.setLayout([10,10,80])">10 / 10 / 80</button>
+          <span class="signal-label">layout = </span>
+          <span class="signal-value" id="ctl-live">—</span>
+        </div>
+      </section>
 
-    <section class="demo rtl">
-      <h2>6. RTL (horizontal axis)</h2>
-      <div class="body">
-        <schism-group direction="horizontal" style="direction:rtl">
-          <schism-pane>start (right in RTL)</schism-pane>
-          <schism-resizer></schism-resizer>
-          <schism-pane>end (left in RTL)</schism-pane>
-        </schism-group>
-      </div>
-    </section>
+      <!-- 6. RTL -->
+      <section class="demo">
+        <div class="demo-head">
+          <h2>RTL — horizontal axis</h2>
+          <p>Drag and arrow-key directions invert when <code>dir="rtl"</code> is in effect.</p>
+        </div>
+        <div class="demo-frame rtl-frame">
+          <schism-group direction="horizontal" style="direction:rtl">
+            <schism-pane class="pane pane--coral">
+              <span class="pane-label">Start</span>
+              <p class="pane-title">Right side in RTL</p>
+            </schism-pane>
+            <schism-resizer></schism-resizer>
+            <schism-pane class="pane">
+              <span class="pane-label">End</span>
+              <p class="pane-title">Left side in RTL</p>
+            </schism-pane>
+          </schism-group>
+        </div>
+      </section>
+    </main>
+
+    <footer class="page-footer">
+      Built with native web components.
+      <a href="/demos/datastar.html">See the Datastar version →</a>
+    </footer>
 
     <script type="module">
       import "/src/index.ts";
 
+      const fmt = (l) =>
+        "[" + l.map((n) => n.toFixed(1)).join(", ") + "]";
+
       const ide = document.getElementById("ide");
+      const ideInner = document.getElementById("ide-inner");
       const sidebar = ide.querySelector("schism-pane");
-      const ideLive = document.getElementById("ide-live");
+      const ideOuterLive = document.getElementById("ide-outer-live");
+      const ideInnerLive = document.getElementById("ide-inner-live");
       document.getElementById("ide-collapse").onclick = () => sidebar.collapse();
       document.getElementById("ide-expand").onclick = () => sidebar.expand();
-      document.getElementById("ide-reset").onclick = () =>
+      document.getElementById("ide-reset").onclick = () => {
         ide.setLayout([22, 56, 22]);
+        ideInner.setLayout([70, 30]);
+      };
       ide.addEventListener("layout-change", (e) => {
-        ideLive.textContent =
-          "layout: [" + e.detail.layout.map((n) => n.toFixed(1)).join(", ") + "]";
+        ideOuterLive.textContent = fmt(e.detail.layout);
+      });
+      ideInner.addEventListener("layout-change", (e) => {
+        ideInnerLive.textContent = fmt(e.detail.layout);
       });
 
       const ctl = document.getElementById("ctl");
       window.ctl = ctl;
       const ctlLive = document.getElementById("ctl-live");
       ctl.addEventListener("layout-change", (e) => {
-        ctlLive.textContent = "[" + e.detail.layout.map((n) => n.toFixed(1)).join(", ") + "]";
+        ctlLive.textContent = fmt(e.detail.layout);
       });
     </script>
   </body>

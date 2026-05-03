@@ -35,6 +35,6 @@ export default defineConfig({
   },
   plugins: [dts({ rollupTypes: true, include: ["src"], outDir: "dist" })],
   server: {
-    open: "/demos/wc-only.html",
+    open: false,
   },
 });

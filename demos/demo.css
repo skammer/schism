@@ -1,0 +1,362 @@
+:root {
+  color-scheme: light;
+
+  --c-primary: #181d26;
+  --c-primary-active: #0d1218;
+  --c-ink: #181d26;
+  --c-body: #333840;
+  --c-muted: #41454d;
+  --c-hairline: #dddddd;
+  --c-border-strong: #9297a0;
+  --c-canvas: #ffffff;
+  --c-surface-soft: #f8fafc;
+  --c-surface-strong: #e0e2e6;
+  --c-surface-dark: #181d26;
+
+  --c-coral: #aa2d00;
+  --c-forest: #0a2e0e;
+  --c-cream: #f5e9d4;
+  --c-peach: #fcab79;
+  --c-mint: #a8d8c4;
+  --c-yellow: #f4d35e;
+  --c-mustard: #d9a441;
+
+  --c-on-dark: #ffffff;
+  --c-link: #1b61c9;
+  --c-info-border: #458fff;
+
+  --r-xs: 2px;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 12px;
+
+  --s-xxs: 4px;
+  --s-xs: 8px;
+  --s-sm: 12px;
+  --s-md: 16px;
+  --s-lg: 24px;
+  --s-xl: 32px;
+  --s-xxl: 48px;
+  --s-section: 96px;
+
+  --font-text:
+    "Haas Grot Text", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display:
+    "Haas Groot Disp", "Inter Display", "Inter", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background: var(--c-canvas);
+  color: var(--c-body);
+  font-family: var(--font-text);
+  font-size: 14px;
+  line-height: 1.25;
+  font-weight: 400;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--c-link);
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--c-primary);
+  color: var(--c-on-dark);
+}
+
+/* ─── editorial layout ─────────────────────────────────── */
+
+.page-header {
+  padding: var(--s-section) var(--s-xxl) var(--s-xxl);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.page-header h1 {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0;
+  color: var(--c-ink);
+  margin: 0 0 var(--s-md);
+  max-width: 720px;
+}
+
+.page-header p {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--c-body);
+  margin: 0;
+  max-width: 640px;
+}
+
+.page-header kbd {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 1px 6px;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-xs);
+  background: var(--c-surface-soft);
+  color: var(--c-ink);
+}
+
+main {
+  padding: 0 var(--s-xxl) var(--s-section);
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-xxl);
+}
+
+/* ─── demo card ────────────────────────────────────────── */
+
+.demo {
+  background: var(--c-canvas);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.demo-head {
+  padding: var(--s-lg) var(--s-xl);
+  border-bottom: 1px solid var(--c-hairline);
+}
+
+.demo-head h2 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: 0.12px;
+  line-height: 1.35;
+  color: var(--c-ink);
+  margin: 0 0 var(--s-xxs);
+}
+
+.demo-head p {
+  font-size: 14px;
+  color: var(--c-muted);
+  margin: 0;
+}
+
+.demo-frame {
+  height: 320px;
+  border-bottom: 1px solid var(--c-hairline);
+}
+
+/* nested grouping for IDE-style demo */
+.demo-frame--tall {
+  height: 420px;
+}
+
+.demo-toolbar {
+  padding: var(--s-md) var(--s-xl);
+  display: flex;
+  gap: var(--s-sm);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.demo-toolbar .signal-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--c-muted);
+  margin-left: auto;
+}
+
+.demo-toolbar .signal-value {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--c-ink);
+  background: var(--c-surface-soft);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-sm);
+  padding: 4px var(--s-xs);
+  min-width: 200px;
+}
+
+/* ─── buttons ──────────────────────────────────────────── */
+
+.button-primary,
+.button-secondary {
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  border-radius: var(--r-lg);
+  padding: 12px 20px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: none;
+}
+
+.button-primary {
+  background: var(--c-primary);
+  color: var(--c-on-dark);
+  border-color: var(--c-primary);
+}
+.button-primary:active {
+  background: var(--c-primary-active);
+  border-color: var(--c-primary-active);
+}
+
+.button-secondary {
+  background: var(--c-canvas);
+  color: var(--c-ink);
+  border-color: var(--c-hairline);
+}
+.button-secondary:active {
+  background: var(--c-surface-soft);
+}
+
+.button-secondary:focus-visible,
+.button-primary:focus-visible {
+  outline: 2px solid var(--c-info-border);
+  outline-offset: 2px;
+}
+
+/* ─── pane content treatments ──────────────────────────── */
+
+.pane {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: var(--s-lg);
+  gap: var(--s-xs);
+  height: 100%;
+  overflow: auto;
+}
+.pane-label {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.16px;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+.pane-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: inherit;
+  margin: 0;
+}
+.pane-body {
+  font-size: 14px;
+  color: inherit;
+  opacity: 0.85;
+  margin: 0;
+}
+
+.pane--coral {
+  background: var(--c-coral);
+  color: var(--c-on-dark);
+}
+.pane--coral .pane-label,
+.pane--forest .pane-label,
+.pane--dark .pane-label {
+  color: var(--c-on-dark);
+  opacity: 0.7;
+}
+.pane--forest {
+  background: var(--c-forest);
+  color: var(--c-on-dark);
+}
+.pane--cream {
+  background: var(--c-cream);
+  color: var(--c-ink);
+}
+.pane--peach {
+  background: var(--c-peach);
+  color: var(--c-ink);
+}
+.pane--mint {
+  background: var(--c-mint);
+  color: var(--c-ink);
+}
+.pane--yellow {
+  background: var(--c-yellow);
+  color: var(--c-ink);
+}
+.pane--mustard {
+  background: var(--c-mustard);
+  color: var(--c-ink);
+}
+.pane--soft {
+  background: var(--c-surface-soft);
+}
+.pane--dark {
+  background: var(--c-surface-dark);
+  color: var(--c-on-dark);
+}
+
+.pane--mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: inherit;
+  white-space: pre;
+}
+
+/* ─── schism handle theming for demos ──────────────────── */
+
+schism-group {
+  --schism-handle-size: 8px;
+  --schism-handle-bg: var(--c-canvas);
+  --schism-handle-bg-hover: var(--c-surface-strong);
+  --schism-handle-color: var(--c-ink);
+}
+
+/* Hairline ridge in the center of every handle. */
+schism-resizer {
+  position: relative;
+}
+schism-resizer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  background: var(--c-hairline);
+  pointer-events: none;
+}
+schism-group[direction="horizontal"] > schism-resizer::after {
+  width: 1px;
+  height: 100%;
+}
+schism-group[direction="vertical"] > schism-resizer::after {
+  height: 1px;
+  width: 100%;
+}
+schism-resizer:focus-visible {
+  outline: 2px solid var(--c-info-border);
+  outline-offset: -2px;
+}
+
+/* RTL marker for the demo */
+.rtl-frame {
+  direction: rtl;
+}
+
+/* small footer */
+.page-footer {
+  padding: var(--s-xl) var(--s-xxl) var(--s-xxl);
+  max-width: 1280px;
+  margin: 0 auto;
+  font-size: 13px;
+  color: var(--c-muted);
+}
