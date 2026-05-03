@@ -463,6 +463,7 @@ export class SchismGroupElement extends HTMLElement {
     resizer.removeAttribute("data-active");
     this.removeAttribute("data-dragging");
     clearGlobalCursor();
+    resizer.blur();
     this.#drag = null;
     this.dispatchEvent(
       new CustomEvent("dragging-change", { detail: { dragging: false } }),
