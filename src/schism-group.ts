@@ -8,19 +8,19 @@ import { clearGlobalCursor, getCursorStyle, setGlobalCursor } from "./core/style
 import { defaultStorage, loadPaneGroup, savePaneGroup } from "./core/storage.js";
 import type { Direction, PaneConstraints, PaneRecord, PaneGroupStorage } from "./core/types.js";
 import { sizeToPercent } from "./core/units.js";
-import type { SplitPaneElement } from "./split-pane.js";
-import type { SplitResizerElement } from "./split-resizer.js";
+import type { SchismPaneElement } from "./schism-pane.js";
+import type { SchismResizerElement } from "./schism-resizer.js";
 
 interface DragState {
   pointerId: number;
-  resizer: SplitResizerElement;
+  resizer: SchismResizerElement;
   pivotIndices: [number, number];
   initialCursor: number;
   initialLayout: number[];
   groupSizePx: number;
 }
 
-export class SplitGroupElement extends HTMLElement {
+export class SchismGroupElement extends HTMLElement {
   static get observedAttributes(): string[] {
     return ["direction", "save-id", "keyboard-resize-by"];
   }
@@ -28,8 +28,8 @@ export class SplitGroupElement extends HTMLElement {
   groupId: string = `g-${Math.random().toString(36).slice(2, 9)}`;
   storage: PaneGroupStorage = defaultStorage;
 
-  #panes: SplitPaneElement[] = [];
-  #resizers: SplitResizerElement[] = [];
+  #panes: SchismPaneElement[] = [];
+  #resizers: SchismResizerElement[] = [];
   #layout: number[] = [];
   #expandToSizes = new Map<string, number>();
   #lastNotifiedSizes: Record<string, number> = {};
@@ -44,15 +44,15 @@ export class SplitGroupElement extends HTMLElement {
     root.innerHTML = `<style>
       :host{display:flex;flex-direction:row;width:100%;height:100%;overflow:hidden;}
       :host([direction="vertical"]){flex-direction:column;}
-      :host([data-dragging]) ::slotted(split-pane){pointer-events:none;}
+      :host([data-dragging]) ::slotted(schism-pane){pointer-events:none;}
     </style><slot></slot>`;
 
-    this.addEventListener("split-pane-connect", this.#onChildChange);
-    this.addEventListener("split-pane-disconnect", this.#onChildChange);
-    this.addEventListener("split-pane-change", this.#onChildChange);
-    this.addEventListener("split-resizer-connect", this.#onChildChange);
-    this.addEventListener("split-resizer-disconnect", this.#onChildChange);
-    this.addEventListener("split-resizer-change", this.#onChildChange);
+    this.addEventListener("schism-pane-connect", this.#onChildChange);
+    this.addEventListener("schism-pane-disconnect", this.#onChildChange);
+    this.addEventListener("schism-pane-change", this.#onChildChange);
+    this.addEventListener("schism-resizer-connect", this.#onChildChange);
+    this.addEventListener("schism-resizer-disconnect", this.#onChildChange);
+    this.addEventListener("schism-resizer-change", this.#onChildChange);
 
     // Pointer + keyboard delegated to the group (event.target is the resizer).
     this.addEventListener("pointerdown", this.#onPointerDown);
@@ -100,12 +100,12 @@ export class SplitGroupElement extends HTMLElement {
     this.#applyLayout(validated, "imperative-api");
   }
 
-  getPaneSize(p: SplitPaneElement): number {
+  getPaneSize(p: SchismPaneElement): number {
     const i = this.#panes.indexOf(p);
     return i < 0 ? 0 : this.#layout[i] ?? 0;
   }
 
-  resizePane(p: SplitPaneElement, percent: number): void {
+  resizePane(p: SchismPaneElement, percent: number): void {
     const i = this.#panes.indexOf(p);
     if (i < 0) return;
     const isLast = i === this.#panes.length - 1;
@@ -124,7 +124,7 @@ export class SplitGroupElement extends HTMLElement {
     this.#applyLayout(next, "imperative-api");
   }
 
-  collapsePane(p: SplitPaneElement): void {
+  collapsePane(p: SchismPaneElement): void {
     const i = this.#panes.indexOf(p);
     if (i < 0) return;
     const c = this.#constraints();
@@ -136,7 +136,7 @@ export class SplitGroupElement extends HTMLElement {
     this.resizePane(p, collapsed);
   }
 
-  expandPane(p: SplitPaneElement, toSize?: number): void {
+  expandPane(p: SchismPaneElement, toSize?: number): void {
     const i = this.#panes.indexOf(p);
     if (i < 0) return;
     const c = this.#constraints();
@@ -166,12 +166,12 @@ export class SplitGroupElement extends HTMLElement {
   }
 
   #scan(): void {
-    const panes: SplitPaneElement[] = [];
-    const resizers: SplitResizerElement[] = [];
+    const panes: SchismPaneElement[] = [];
+    const resizers: SchismResizerElement[] = [];
     for (const child of Array.from(this.children)) {
       const tag = child.tagName.toLowerCase();
-      if (tag === "split-pane") panes.push(child as SplitPaneElement);
-      else if (tag === "split-resizer") resizers.push(child as SplitResizerElement);
+      if (tag === "schism-pane") panes.push(child as SchismPaneElement);
+      else if (tag === "schism-resizer") resizers.push(child as SchismResizerElement);
     }
     // Sort by `order` attribute (numeric); keep DOM order for ties.
     panes.sort((a, b) => {
@@ -233,7 +233,7 @@ export class SplitGroupElement extends HTMLElement {
     return this.#panes.map((p) => this.#paneConstraints(p));
   }
 
-  #paneConstraints(p: SplitPaneElement): PaneConstraints {
+  #paneConstraints(p: SchismPaneElement): PaneConstraints {
     const groupPx = this.#groupSize();
     const min = sizeToPercent(p.getAttribute("min-size"), groupPx, this) ?? 0;
     const max = sizeToPercent(p.getAttribute("max-size"), groupPx, this) ?? 100;
@@ -374,7 +374,7 @@ export class SplitGroupElement extends HTMLElement {
 
   #onPointerDown = (e: PointerEvent): void => {
     const target = e.target as Element | null;
-    const resizer = target?.closest("split-resizer") as SplitResizerElement | null;
+    const resizer = target?.closest("schism-resizer") as SchismResizerElement | null;
     if (!resizer || resizer.parentElement !== this) return;
     if (resizer.hasAttribute("disabled")) return;
     const idx = this.#resizers.indexOf(resizer);
@@ -473,7 +473,7 @@ export class SplitGroupElement extends HTMLElement {
 
   #onKeyDown = (e: KeyboardEvent): void => {
     const target = e.target as Element | null;
-    const resizer = target?.closest("split-resizer") as SplitResizerElement | null;
+    const resizer = target?.closest("schism-resizer") as SchismResizerElement | null;
     if (!resizer || resizer.parentElement !== this) return;
     if (resizer.hasAttribute("disabled")) return;
     const idx = this.#resizers.indexOf(resizer);

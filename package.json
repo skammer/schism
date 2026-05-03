@@ -1,22 +1,22 @@
 {
-  "name": "@skammer/split",
+  "name": "@skammer/schism",
   "version": "0.1.0",
   "description": "Resizable split-pane web components",
   "license": "MIT",
   "type": "module",
-  "main": "./dist/split.js",
-  "module": "./dist/split.js",
-  "types": "./dist/split.d.ts",
+  "main": "./dist/schism.js",
+  "module": "./dist/schism.js",
+  "types": "./dist/schism.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/split.d.ts",
-      "import": "./dist/split.js"
+      "types": "./dist/schism.d.ts",
+      "import": "./dist/schism.js"
     },
     "./datastar": {
       "types": "./dist/datastar.d.ts",
       "import": "./dist/datastar.js"
     },
-    "./split.css": "./dist/split.css"
+    "./schism.css": "./dist/schism.css"
   },
   "files": [
     "dist",
@@ -24,7 +24,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build && BUILD_TARGET=datastar vite build && cp src/split.css dist/split.css",
+    "build": "tsc --noEmit && vite build && BUILD_TARGET=datastar vite build && cp src/schism.css dist/schism.css",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },

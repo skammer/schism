@@ -1,0 +1,77 @@
+/*
+ * @skammer/schism — required stylesheet.
+ * Provides hit areas, cursors, and theming hooks. Override via CSS custom properties:
+ *   --schism-handle-size      thickness of the resizer hit area (default 6px)
+ *   --schism-handle-bg        background color of the resizer
+ *   --schism-handle-bg-hover  hover/active background
+ *   --schism-handle-color     color of the optional center indicator
+ *   --schism-pane-bg          default pane background
+ */
+
+schism-group {
+  --schism-handle-size: 6px;
+  --schism-handle-bg: transparent;
+  --schism-handle-bg-hover: color-mix(in srgb, currentColor 12%, transparent);
+  --schism-handle-color: currentColor;
+  --schism-pane-bg: transparent;
+
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+schism-group[direction="vertical"] {
+  flex-direction: column;
+}
+
+/* Panes are flex items; sizes are written via inline `flex-grow`. */
+schism-pane {
+  display: block;
+  overflow: hidden;
+  background: var(--schism-pane-bg);
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Resizer hit area + cursor. */
+schism-resizer {
+  display: block;
+  flex: 0 0 auto;
+  position: relative;
+  background: var(--schism-handle-bg);
+  touch-action: none;
+  user-select: none;
+}
+
+schism-group[direction="horizontal"] > schism-resizer {
+  width: var(--schism-handle-size);
+  cursor: ew-resize;
+}
+
+schism-group[direction="vertical"] > schism-resizer {
+  height: var(--schism-handle-size);
+  cursor: ns-resize;
+}
+
+schism-resizer:hover,
+schism-resizer:focus-visible,
+schism-resizer[data-active] {
+  background: var(--schism-handle-bg-hover);
+}
+
+schism-resizer:focus-visible {
+  outline: 2px solid var(--schism-handle-color);
+  outline-offset: -2px;
+}
+
+schism-resizer[disabled] {
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* While dragging, suppress pointer events on panes so iframes/buttons don't eat moves. */
+schism-group[data-dragging] > schism-pane {
+  pointer-events: none;
+}

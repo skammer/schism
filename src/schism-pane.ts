@@ -1,5 +1,5 @@
 /**
- * `<split-pane>` — a single pane within a `<split-group>`.
+ * `<schism-pane>` — a single pane within a `<schism-group>`.
  *
  * Attributes:
  *   min-size       e.g. "20%" or "240px" (default 0%)
@@ -9,7 +9,7 @@
  *   collapsed-size size while collapsed (default 0)
  *   order          integer; influences position when conditionally rendered
  */
-export class SplitPaneElement extends HTMLElement {
+export class SchismPaneElement extends HTMLElement {
   static get observedAttributes(): string[] {
     return [
       "min-size",
@@ -48,7 +48,7 @@ export class SplitPaneElement extends HTMLElement {
 
   #notify(kind: "connect" | "disconnect" | "change"): void {
     this.dispatchEvent(
-      new CustomEvent("split-pane-" + kind, { bubbles: true, composed: false }),
+      new CustomEvent("schism-pane-" + kind, { bubbles: true, composed: false }),
     );
   }
 
@@ -74,14 +74,14 @@ export class SplitPaneElement extends HTMLElement {
   }
 
   #callOnGroup<T>(fn: (g: GroupAPI) => T): T | undefined {
-    const g = this.closest("split-group") as unknown as GroupAPI | null;
+    const g = this.closest("schism-group") as unknown as GroupAPI | null;
     return g ? fn(g) : undefined;
   }
 }
 
 interface GroupAPI {
-  collapsePane(p: SplitPaneElement): void;
-  expandPane(p: SplitPaneElement, toSize?: number): void;
-  resizePane(p: SplitPaneElement, percent: number): void;
-  getPaneSize(p: SplitPaneElement): number;
+  collapsePane(p: SchismPaneElement): void;
+  expandPane(p: SchismPaneElement, toSize?: number): void;
+  resizePane(p: SchismPaneElement, percent: number): void;
+  getPaneSize(p: SchismPaneElement): number;
 }

@@ -1,11 +1,11 @@
 /**
- * `<split-resizer>` — drag handle / keyboard separator between two panes.
+ * `<schism-resizer>` — drag handle / keyboard separator between two panes.
  *
  * Attributes:
  *   disabled   boolean — drag/keyboard disabled
  *   tabindex   defaults to 0; set manually to skip
  */
-export class SplitResizerElement extends HTMLElement {
+export class SchismResizerElement extends HTMLElement {
   static get observedAttributes(): string[] {
     return ["disabled"];
   }
@@ -50,7 +50,7 @@ export class SplitResizerElement extends HTMLElement {
 
   #notify(kind: "connect" | "disconnect" | "change"): void {
     this.dispatchEvent(
-      new CustomEvent("split-resizer-" + kind, { bubbles: true, composed: false }),
+      new CustomEvent("schism-resizer-" + kind, { bubbles: true, composed: false }),
     );
   }
 }

@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@skammer/split — Datastar demo</title>
-    <link rel="stylesheet" href="/src/split.css" />
+    <title>@skammer/schism — Datastar demo</title>
+    <link rel="stylesheet" href="/src/schism.css" />
 
     <!-- Load the web components FIRST so Datastar can call methods on upgraded elements. -->
     <script type="module" src="/src/index.ts"></script>
@@ -58,7 +58,7 @@
       .demo > .body {
         height: 320px;
       }
-      split-pane {
+      schism-pane {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -66,7 +66,7 @@
         color: var(--ink-dim);
         background: var(--panel);
       }
-      split-pane:nth-child(odd) {
+      schism-pane:nth-child(odd) {
         background: var(--panel-2);
       }
       .toolbar {
@@ -111,7 +111,7 @@
     }"
   >
     <header>
-      <h1>@skammer/split — with Datastar</h1>
+      <h1>@skammer/schism — with Datastar</h1>
       <p>
         Same components, wired up via Datastar attributes. Drag a handle and
         watch the signal update; click a button to set the signal and the
@@ -122,16 +122,16 @@
     <section class="demo">
       <h2>1. layout-change → signal (one-way)</h2>
       <div class="body">
-        <split-group
+        <schism-group
           direction="horizontal"
           data-on:layout-change="$s1Layout = evt.detail.layout"
         >
-          <split-pane>A</split-pane>
-          <split-resizer></split-resizer>
-          <split-pane>B</split-pane>
-          <split-resizer></split-resizer>
-          <split-pane>C</split-pane>
-        </split-group>
+          <schism-pane>A</schism-pane>
+          <schism-resizer></schism-resizer>
+          <schism-pane>B</schism-pane>
+          <schism-resizer></schism-resizer>
+          <schism-pane>C</schism-pane>
+        </schism-group>
       </div>
       <div class="toolbar">
         <span class="signal">$s1Layout = </span>
@@ -145,17 +145,17 @@
     <section class="demo">
       <h2>2. Two-way: signal ⇄ layout</h2>
       <div class="body">
-        <split-group
+        <schism-group
           direction="horizontal"
           data-on:layout-change="$s2Layout = evt.detail.layout"
           data-effect="el.setLayout && $s2Layout.length === 3 && el.setLayout($s2Layout)"
         >
-          <split-pane default-size="20">A</split-pane>
-          <split-resizer></split-resizer>
-          <split-pane default-size="60">B</split-pane>
-          <split-resizer></split-resizer>
-          <split-pane default-size="20">C</split-pane>
-        </split-group>
+          <schism-pane default-size="20">A</schism-pane>
+          <schism-resizer></schism-resizer>
+          <schism-pane default-size="60">B</schism-pane>
+          <schism-resizer></schism-resizer>
+          <schism-pane default-size="20">C</schism-pane>
+        </schism-group>
       </div>
       <div class="toolbar">
         <button data-on:click="$s2Layout = [20, 60, 20]">20 / 60 / 20</button>
@@ -172,23 +172,23 @@
     <section class="demo">
       <h2>3. Sidebar: collapse/expand events drive a signal</h2>
       <div class="body">
-        <split-group direction="horizontal">
-          <split-pane
+        <schism-group direction="horizontal">
+          <schism-pane
             min-size="120px"
             collapsible
             collapsed-size="0"
             default-size="25"
             data-on:collapse="$sidebarCollapsed = true"
             data-on:expand="$sidebarCollapsed = false"
-          >sidebar</split-pane>
-          <split-resizer></split-resizer>
-          <split-pane>main</split-pane>
-        </split-group>
+          >sidebar</schism-pane>
+          <schism-resizer></schism-resizer>
+          <schism-pane>main</schism-pane>
+        </schism-group>
       </div>
       <div class="toolbar">
         <button
           data-on:click="
-            const pane = el.closest('.demo').querySelector('split-pane');
+            const pane = el.closest('.demo').querySelector('schism-pane');
             $sidebarCollapsed ? pane.expand() : pane.collapse();
           "
           data-text="$sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
@@ -200,15 +200,15 @@
     <section class="demo">
       <h2>4. Persisted via save-id (independent of any signal)</h2>
       <div class="body">
-        <split-group
+        <schism-group
           direction="vertical"
           save-id="datastar-demo"
           data-on:layout-change="$s4Layout = evt.detail.layout"
         >
-          <split-pane>top — drag, refresh, persists</split-pane>
-          <split-resizer></split-resizer>
-          <split-pane>bottom</split-pane>
-        </split-group>
+          <schism-pane>top — drag, refresh, persists</schism-pane>
+          <schism-resizer></schism-resizer>
+          <schism-pane>bottom</schism-pane>
+        </schism-group>
       </div>
       <div class="toolbar">
         <span class="signal">$s4Layout = </span>
@@ -216,7 +216,7 @@
           class="signal"
           data-text="$s4Layout.length ? JSON.stringify($s4Layout.map(n => +n.toFixed(1))) : '(waiting…)'"
         ></span>
-        <button onclick="localStorage.removeItem('split:datastar-demo'); location.reload();">
+        <button onclick="localStorage.removeItem('schism:datastar-demo'); location.reload();">
           Clear saved layout
         </button>
       </div>

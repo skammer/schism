@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@skammer/split — Web Components demo</title>
-    <link rel="stylesheet" href="/src/split.css" />
+    <title>@skammer/schism — Web Components demo</title>
+    <link rel="stylesheet" href="/src/schism.css" />
     <style>
       :root {
         color-scheme: light dark;
@@ -51,7 +51,7 @@
       .demo > .body {
         height: 320px;
       }
-      split-pane {
+      schism-pane {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -59,10 +59,10 @@
         color: var(--ink-dim);
         background: var(--panel);
       }
-      split-pane:nth-child(odd) {
+      schism-pane:nth-child(odd) {
         background: var(--panel-2);
       }
-      split-pane[data-collapsed] {
+      schism-pane[data-collapsed] {
         color: transparent;
       }
       .toolbar {
@@ -93,7 +93,7 @@
         border-radius: 3px;
         background: var(--panel-2);
       }
-      .ide split-pane {
+      .ide schism-pane {
         background: var(--panel);
       }
       .ide .file-tree {
@@ -124,7 +124,7 @@
   </head>
   <body>
     <header>
-      <h1>@skammer/split — Web Components</h1>
+      <h1>@skammer/schism — Web Components</h1>
       <p>
         Drag handles to resize. Use <kbd>Tab</kbd> to focus a handle, then
         <kbd>←/→</kbd> or <kbd>↑/↓</kbd> to resize, <kbd>Shift</kbd> for big steps,
@@ -136,32 +136,32 @@
     <section class="demo">
       <h2>1. Horizontal — basic</h2>
       <div class="body">
-        <split-group direction="horizontal">
-          <split-pane default-size="30">A</split-pane>
-          <split-resizer></split-resizer>
-          <split-pane>B</split-pane>
-          <split-resizer></split-resizer>
-          <split-pane default-size="20">C</split-pane>
-        </split-group>
+        <schism-group direction="horizontal">
+          <schism-pane default-size="30">A</schism-pane>
+          <schism-resizer></schism-resizer>
+          <schism-pane>B</schism-pane>
+          <schism-resizer></schism-resizer>
+          <schism-pane default-size="20">C</schism-pane>
+        </schism-group>
       </div>
     </section>
 
     <section class="demo">
       <h2>2. Vertical</h2>
       <div class="body">
-        <split-group direction="vertical">
-          <split-pane>top</split-pane>
-          <split-resizer></split-resizer>
-          <split-pane>bottom</split-pane>
-        </split-group>
+        <schism-group direction="vertical">
+          <schism-pane>top</schism-pane>
+          <schism-resizer></schism-resizer>
+          <schism-pane>bottom</schism-pane>
+        </schism-group>
       </div>
     </section>
 
     <section class="demo">
       <h2>3. Nested — IDE-style layout (px min-sizes, collapsible sidebar)</h2>
       <div class="body ide">
-        <split-group direction="horizontal" id="ide">
-          <split-pane
+        <schism-group direction="horizontal" id="ide">
+          <schism-pane
             class="file-tree"
             min-size="120px"
             max-size="40%"
@@ -174,20 +174,20 @@
   app.tsx
   utils/
     fmt.ts</span>
-          </split-pane>
-          <split-resizer></split-resizer>
-          <split-pane>
-            <split-group direction="vertical" style="width:100%;height:100%">
-              <split-pane default-size="70">editor</split-pane>
-              <split-resizer></split-resizer>
-              <split-pane class="terminal" min-size="60px" default-size="30">
+          </schism-pane>
+          <schism-resizer></schism-resizer>
+          <schism-pane>
+            <schism-group direction="vertical" style="width:100%;height:100%">
+              <schism-pane default-size="70">editor</schism-pane>
+              <schism-resizer></schism-resizer>
+              <schism-pane class="terminal" min-size="60px" default-size="30">
                 $ <span style="color:#fff">npm test</span>
-              </split-pane>
-            </split-group>
-          </split-pane>
-          <split-resizer></split-resizer>
-          <split-pane min-size="160px" default-size="22">preview</split-pane>
-        </split-group>
+              </schism-pane>
+            </schism-group>
+          </schism-pane>
+          <schism-resizer></schism-resizer>
+          <schism-pane min-size="160px" default-size="22">preview</schism-pane>
+        </schism-group>
       </div>
       <div class="toolbar">
         <button id="ide-collapse">Collapse sidebar</button>
@@ -200,16 +200,16 @@
     <section class="demo">
       <h2>4. Persisted layout (save-id="demo")</h2>
       <div class="body">
-        <split-group direction="horizontal" save-id="demo">
-          <split-pane default-size="33">A — drag, then refresh</split-pane>
-          <split-resizer></split-resizer>
-          <split-pane default-size="33">B</split-pane>
-          <split-resizer></split-resizer>
-          <split-pane>C</split-pane>
-        </split-group>
+        <schism-group direction="horizontal" save-id="demo">
+          <schism-pane default-size="33">A — drag, then refresh</schism-pane>
+          <schism-resizer></schism-resizer>
+          <schism-pane default-size="33">B</schism-pane>
+          <schism-resizer></schism-resizer>
+          <schism-pane>C</schism-pane>
+        </schism-group>
       </div>
       <div class="toolbar">
-        <button onclick="localStorage.removeItem('split:demo'); location.reload();">
+        <button onclick="localStorage.removeItem('schism:demo'); location.reload();">
           Clear saved layout
         </button>
       </div>
@@ -218,13 +218,13 @@
     <section class="demo">
       <h2>5. Controlled — set layout via API</h2>
       <div class="body">
-        <split-group direction="horizontal" id="ctl">
-          <split-pane>A</split-pane>
-          <split-resizer></split-resizer>
-          <split-pane>B</split-pane>
-          <split-resizer></split-resizer>
-          <split-pane>C</split-pane>
-        </split-group>
+        <schism-group direction="horizontal" id="ctl">
+          <schism-pane>A</schism-pane>
+          <schism-resizer></schism-resizer>
+          <schism-pane>B</schism-pane>
+          <schism-resizer></schism-resizer>
+          <schism-pane>C</schism-pane>
+        </schism-group>
       </div>
       <div class="toolbar">
         <button onclick="ctl.setLayout([20,60,20])">20 / 60 / 20</button>
@@ -237,11 +237,11 @@
     <section class="demo rtl">
       <h2>6. RTL (horizontal axis)</h2>
       <div class="body">
-        <split-group direction="horizontal" style="direction:rtl">
-          <split-pane>start (right in RTL)</split-pane>
-          <split-resizer></split-resizer>
-          <split-pane>end (left in RTL)</split-pane>
-        </split-group>
+        <schism-group direction="horizontal" style="direction:rtl">
+          <schism-pane>start (right in RTL)</schism-pane>
+          <schism-resizer></schism-resizer>
+          <schism-pane>end (left in RTL)</schism-pane>
+        </schism-group>
       </div>
     </section>
 
@@ -249,7 +249,7 @@
       import "/src/index.ts";
 
       const ide = document.getElementById("ide");
-      const sidebar = ide.querySelector("split-pane");
+      const sidebar = ide.querySelector("schism-pane");
       const ideLive = document.getElementById("ide-live");
       document.getElementById("ide-collapse").onclick = () => sidebar.collapse();
       document.getElementById("ide-expand").onclick = () => sidebar.expand();

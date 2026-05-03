@@ -17,7 +17,7 @@ export function setGlobalCursor(cursor: string): void {
   if (typeof document === "undefined") return;
   if (!cursorStyleEl) {
     cursorStyleEl = document.createElement("style");
-    cursorStyleEl.dataset.split = "cursor";
+    cursorStyleEl.dataset.schism = "cursor";
     document.head.appendChild(cursorStyleEl);
   }
   cursorStyleEl.textContent = `*{cursor:${cursor}!important;user-select:none!important;}`;

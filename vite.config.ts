@@ -16,14 +16,14 @@ export default defineConfig({
       : {
           entry: resolve(__dirname, "src/index.ts"),
           formats: ["es"],
-          fileName: () => "split.js",
+          fileName: () => "schism.js",
         },
     rollupOptions: isDatastarBuild
       ? {
           external: [/\.\/index\.js$/, /\.\/index$/],
           output: {
             inlineDynamicImports: true,
-            paths: { "./index.js": "./split.js", "./index": "./split.js" },
+            paths: { "./index.js": "./schism.js", "./index": "./schism.js" },
           },
         }
       : {
