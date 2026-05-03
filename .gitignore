@@ -1,9 +1,9 @@
 node_modules
 dist
+dist-demos
 *.log
 .DS_Store
 inspiration
 reports
 .claude
-package-lock.json
 tmp

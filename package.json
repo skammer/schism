@@ -25,7 +25,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build && BUILD_TARGET=datastar vite build && cp src/schism.css dist/schism.css",
+    "build:demos": "vite build --config vite.config.demos.ts",
     "preview": "vite preview",
+    "preview:demos": "vite preview --config vite.config.demos.ts",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

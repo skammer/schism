@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Schism — web components demo</title>
-    <link rel="stylesheet" href="/src/schism.css" />
-    <link rel="stylesheet" href="/demos/demo.css" />
+    <link rel="stylesheet" href="../src/schism.css" />
+    <link rel="stylesheet" href="./demo.css" />
   </head>
   <body>
     <header class="page-header">
@@ -302,11 +302,11 @@
 
     <footer class="page-footer">
       Built with native web components.
-      <a href="/demos/datastar.html">See the Datastar version →</a>
+      <a href="./datastar.html">See the Datastar version →</a>
     </footer>
 
     <script type="module">
-      import "/src/index.ts";
+      import "../src/index.ts";
 
       const fmt = (l) =>
         "[" + l.map((n) => n.toFixed(1)).join(", ") + "]";
