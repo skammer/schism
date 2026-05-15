@@ -1,17 +1,17 @@
 /*
  * @skammer/schism — required stylesheet.
  * Provides hit areas, cursors, and theming hooks. Override via CSS custom properties:
- *   --schism-handle-size      thickness of the resizer hit area (default 6px)
- *   --schism-handle-bg        background color of the resizer
- *   --schism-handle-bg-hover  hover/active background
+ *   --schism-handle-size      thickness of the resizer hit area (default 9px)
+ *   --schism-handle-bg        background color of the visible 1px divider
+ *   --schism-handle-bg-hover  hover/active divider background
  *   --schism-handle-color     color of the optional center indicator
  *   --schism-pane-bg          default pane background
  */
 
 schism-group {
-  --schism-handle-size: 6px;
-  --schism-handle-bg: transparent;
-  --schism-handle-bg-hover: color-mix(in srgb, currentColor 12%, transparent);
+  --schism-handle-size: 9px;
+  --schism-handle-bg: color-mix(in srgb, currentColor 15%, transparent);
+  --schism-handle-bg-hover: color-mix(in srgb, currentColor 40%, transparent);
   --schism-handle-color: currentColor;
   --schism-pane-bg: transparent;
 
@@ -34,7 +34,7 @@ schism-pane {
   min-height: 0;
 }
 
-/* Resizer hit area + cursor. */
+/* Resizer = 1px visible bar; ::before provides the wider transparent hit area. */
 schism-resizer {
   display: block;
   flex: 0 0 auto;
@@ -44,13 +44,29 @@ schism-resizer {
   user-select: none;
 }
 
+schism-resizer::before {
+  content: "";
+  position: absolute;
+  background: transparent;
+}
+
 schism-group[direction="horizontal"] > schism-resizer {
-  width: var(--schism-handle-size);
+  width: 1px;
+}
+
+schism-group[direction="horizontal"] > schism-resizer::before {
+  inset: 0;
+  inset-inline: calc((var(--schism-handle-size) - 1px) / -2);
   cursor: ew-resize;
 }
 
 schism-group[direction="vertical"] > schism-resizer {
-  height: var(--schism-handle-size);
+  height: 1px;
+}
+
+schism-group[direction="vertical"] > schism-resizer::before {
+  inset: 0;
+  inset-block: calc((var(--schism-handle-size) - 1px) / -2);
   cursor: ns-resize;
 }
 
