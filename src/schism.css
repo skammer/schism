@@ -34,6 +34,23 @@ schism-pane {
   min-height: 0;
 }
 
+/* Opt-in animated size transitions. Suppressed mid-drag for 1:1 pointer feel.
+ * Honors prefers-reduced-motion. */
+schism-group[animate] > schism-pane {
+  transition: flex-grow var(--schism-animate-duration, 200ms)
+    var(--schism-animate-easing, ease);
+}
+
+schism-group[animate][data-dragging] > schism-pane {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  schism-group[animate] > schism-pane {
+    transition: none;
+  }
+}
+
 /* Resizer = 1px visible bar; ::before provides the wider transparent hit area. */
 schism-resizer {
   display: block;

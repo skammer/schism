@@ -108,13 +108,15 @@
       <!-- 2. two-way -->
       <section class="demo">
         <div class="demo-head">
-          <h2>Two-way: signal ⇄ layout</h2>
+          <h2>Two-way: signal ⇄ layout (animated)</h2>
           <p><code>data-effect</code> calls <code>el.setLayout($s2Layout)</code>
-            whenever the signal changes; the buttons just write to the signal.</p>
+            whenever the signal changes; the buttons just write to the signal.
+            <code>animate</code> tweens between layouts.</p>
         </div>
         <div class="demo-frame">
           <schism-group
             direction="horizontal"
+            animate
             data-on:layout-change="$s2Layout = evt.detail.layout"
             data-effect="el.setLayout && $s2Layout.length === 3 && el.setLayout($s2Layout)"
           >
@@ -140,6 +142,7 @@
           <pre>&lt;body data-signals="{s2Layout: []}"&gt;
   &lt;schism-group
     direction="horizontal"
+    animate
     data-on:layout-change="$s2Layout = evt.detail.layout"
     data-effect="el.setLayout &amp;&amp; $s2Layout.length === 3
                  &amp;&amp; el.setLayout($s2Layout)"
@@ -163,13 +166,13 @@
       <!-- 3. sidebar -->
       <section class="demo">
         <div class="demo-head">
-          <h2>Collapsible sidebar — events drive a signal</h2>
+          <h2>Collapsible sidebar — events drive a signal (animated)</h2>
           <p><code>data-on:collapse</code> and <code>data-on:expand</code> on the
             pane keep <code>$sidebarCollapsed</code> in sync; the button calls
-            the imperative API.</p>
+            the imperative API. <code>animate</code> smooths the collapse.</p>
         </div>
         <div class="demo-frame">
-          <schism-group direction="horizontal">
+          <schism-group direction="horizontal" animate>
             <schism-pane
               class="pane pane--forest"
               min-size="120px"
@@ -204,7 +207,7 @@
         <details class="demo-code">
           <summary>view code</summary>
           <pre>&lt;body data-signals="{sidebarCollapsed: false}"&gt;
-  &lt;schism-group direction="horizontal"&gt;
+  &lt;schism-group direction="horizontal" animate&gt;
     &lt;schism-pane
       min-size="120px" collapsible default-size="25"
       data-on:collapse="$sidebarCollapsed = true"

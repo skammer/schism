@@ -117,15 +117,15 @@
       <!-- 3. nested IDE -->
       <section class="demo">
         <div class="demo-head">
-          <h2>Nested — IDE layout, px constraints, collapsible sidebar</h2>
+          <h2>Nested — IDE layout, px constraints, animated collapse</h2>
           <p>
             Sidebar: <code>min-size="160px"</code>, <code>max-size="40%"</code>,
-            collapsible. Inner vertical group splits the editor and a 60px-min
-            terminal.
+            collapsible. The <code>animate</code> attribute smooths
+            collapse/expand/reset; dragging stays 1:1.
           </p>
         </div>
         <div class="demo-frame demo-frame--tall">
-          <schism-group direction="horizontal" id="ide">
+          <schism-group direction="horizontal" id="ide" animate>
             <schism-pane
               class="pane pane--soft pane--mono"
               min-size="160px"
@@ -140,7 +140,7 @@
     fmt.ts</schism-pane>
             <schism-resizer></schism-resizer>
             <schism-pane>
-              <schism-group direction="vertical" id="ide-inner" style="height:100%">
+              <schism-group direction="vertical" id="ide-inner" animate style="height:100%">
                 <schism-pane class="pane" default-size="70">
                   <span class="pane-label">Editor</span>
                   <p class="pane-title">main.ts</p>
@@ -172,7 +172,7 @@
         </div>
         <details class="demo-code">
           <summary>view code</summary>
-          <pre>&lt;schism-group direction="horizontal" id="ide"&gt;
+          <pre>&lt;schism-group direction="horizontal" id="ide" animate&gt;
   &lt;schism-pane min-size="160px" max-size="40%"
                default-size="22" collapsible&gt;
     sidebar
@@ -255,11 +255,37 @@
       <!-- 5. controlled -->
       <section class="demo">
         <div class="demo-head">
-          <h2>Controlled — set the layout via API</h2>
-          <p><code>group.setLayout([…])</code> validates against the panes' constraints.</p>
+          <h2>Controlled — animated <code>setLayout</code></h2>
+          <p>
+            <code>group.setLayout([…])</code> validates against the panes'
+            constraints; <code>animate</code> tweens between layouts. Tune
+            duration/easing with <code>--schism-animate-duration</code> /
+            <code>--schism-animate-easing</code>.
+          </p>
+        </div>
+        <div class="demo-toolbar" style="margin-bottom:.75rem">
+          <span class="signal-label">duration</span>
+          <select id="ctl-duration" class="button-secondary">
+            <option value="120ms">120ms</option>
+            <option value="240ms" selected>240ms</option>
+            <option value="500ms">500ms</option>
+            <option value="900ms">900ms</option>
+          </select>
+          <span class="signal-label">easing</span>
+          <select id="ctl-easing" class="button-secondary">
+            <option value="ease">ease</option>
+            <option value="cubic-bezier(.2,.9,.2,1.2)" selected>spring-ish</option>
+            <option value="linear">linear</option>
+            <option value="cubic-bezier(.7,0,.3,1)">smooth</option>
+          </select>
         </div>
         <div class="demo-frame">
-          <schism-group direction="horizontal" id="ctl">
+          <schism-group
+            direction="horizontal"
+            id="ctl"
+            animate
+            style="--schism-animate-duration:240ms;--schism-animate-easing:cubic-bezier(.2,.9,.2,1.2)"
+          >
             <schism-pane class="pane">
               <span class="pane-label">A</span>
             </schism-pane>
@@ -282,7 +308,9 @@
         </div>
         <details class="demo-code">
           <summary>view code</summary>
-          <pre>&lt;schism-group id="ctl" direction="horizontal"&gt;
+          <pre>&lt;schism-group id="ctl" direction="horizontal" animate
+              style="--schism-animate-duration: 240ms;
+                     --schism-animate-easing: cubic-bezier(.2,.9,.2,1.2);"&gt;
   &lt;schism-pane&gt;A&lt;/schism-pane&gt;
   &lt;schism-resizer&gt;&lt;/schism-resizer&gt;
   &lt;schism-pane&gt;B&lt;/schism-pane&gt;
@@ -291,7 +319,11 @@
 &lt;/schism-group&gt;
 
 &lt;button onclick="ctl.setLayout([20, 60, 20])"&gt;20 / 60 / 20&lt;/button&gt;
-&lt;button onclick="ctl.setLayout([50, 25, 25])"&gt;50 / 25 / 25&lt;/button&gt;</pre>
+&lt;button onclick="ctl.setLayout([50, 25, 25])"&gt;50 / 25 / 25&lt;/button&gt;
+
+&lt;!-- animate = transitions on flex-grow.
+     Drag stays 1:1 (suppressed while [data-dragging]).
+     Honors prefers-reduced-motion: reduce. --&gt;</pre>
         </details>
       </section>
 
@@ -355,6 +387,14 @@
       const ctlLive = document.getElementById("ctl-live");
       ctl.addEventListener("layout-change", (e) => {
         ctlLive.textContent = fmt(e.detail.layout);
+      });
+      const ctlDuration = document.getElementById("ctl-duration");
+      const ctlEasing = document.getElementById("ctl-easing");
+      ctlDuration.addEventListener("change", () => {
+        ctl.style.setProperty("--schism-animate-duration", ctlDuration.value);
+      });
+      ctlEasing.addEventListener("change", () => {
+        ctl.style.setProperty("--schism-animate-easing", ctlEasing.value);
       });
     </script>
   </body>

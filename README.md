@@ -96,6 +96,7 @@ Container element. Owns the layout, persistence, drag state, ARIA, and keyboard 
 | `direction`            | `"horizontal"` | `"horizontal"` or `"vertical"`                        |
 | `save-id`              | —              | Opt-in localStorage persistence (debounced 100 ms)    |
 | `keyboard-resize-by`   | `10`           | Percent step per arrow keypress                       |
+| `animate`              | (boolean)      | Smooth size transitions (suppressed during pointer drag; honors `prefers-reduced-motion`) |
 
 ### Properties
 
@@ -214,11 +215,13 @@ When focused:
 
 ```css
 schism-group {
-  --schism-handle-size: 6px;
-  --schism-handle-bg: transparent;
-  --schism-handle-bg-hover: color-mix(in srgb, currentColor 12%, transparent);
+  --schism-handle-size: 9px;
+  --schism-handle-bg: color-mix(in srgb, currentColor 15%, transparent);
+  --schism-handle-bg-hover: color-mix(in srgb, currentColor 40%, transparent);
   --schism-handle-color: currentColor;
   --schism-pane-bg: transparent;
+  --schism-animate-duration: 200ms;   /* used when [animate] is set */
+  --schism-animate-easing: ease;
 }
 ```
 
