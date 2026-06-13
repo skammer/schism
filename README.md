@@ -140,7 +140,20 @@ Each region. Light-DOM children render inside it.
 | `default-size`   | even split    | Same units. Remaining space split evenly among panes without a `default-size`     |
 | `collapsible`    | (boolean)     | Enables Enter-to-collapse + halfway-snap                                          |
 | `collapsed-size` | `0%`          | Size while collapsed                                                              |
+| `collapsed`      | (boolean)     | Declarative collapse/expand for `collapsible` panes — see below                   |
 | `order`          | DOM order     | Numeric; controls position when conditionally rendering panes                     |
+
+The `collapsed` attribute is **edge-triggered**: adding it collapses the pane,
+removing it expands — but a drag-collapsed pane (attribute absent throughout) is
+never re-expanded by unrelated re-scans. This makes panes drivable by reactive
+frameworks without imperative glue, e.g. Datastar:
+
+```html
+<schism-pane collapsible collapsed-size="0" data-attr:collapsed="$panelHidden">
+```
+
+Sync drag-driven changes back into your state via the `collapse` / `expand`
+events (e.g. `data-on:expand="$panelHidden = false"`).
 
 ### Methods
 
@@ -204,8 +217,11 @@ When focused:
 | `Shift +` arrow              | Resize by 100% (jumps to the other side)                     |
 | `Home`                       | Shrink leading pane to its minimum                           |
 | `End`                        | Grow leading pane to its maximum                             |
-| `Enter`                      | Toggle collapse on the leading pane (if `collapsible`)       |
+| `Enter`                      | Toggle collapse on the adjacent `collapsible` pane (leading first, then trailing) |
 | `F6` / `Shift + F6`          | Cycle focus between resizers in the group                    |
+
+Pointer parity: **double-clicking** a resizer performs the same collapse toggle
+as `Enter`.
 
 ---
 
@@ -221,6 +237,7 @@ schism-group {
   --schism-handle-color: currentColor;
   --schism-pane-bg: transparent;
   --schism-animate-duration: 200ms;   /* used when [animate] is set */
+  --schism-animate-duration-collapse: var(--schism-animate-duration); /* while a pane is collapsed — asymmetric open/close */
   --schism-animate-easing: ease;
 }
 ```

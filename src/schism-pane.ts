@@ -7,6 +7,13 @@
  *   default-size   initial size; remainder split evenly when omitted
  *   collapsible    boolean
  *   collapsed-size size while collapsed (default 0)
+ *   collapsed      declarative collapse/expand for `collapsible` panes.
+ *                  EDGE-triggered: adding the attribute collapses, removing it
+ *                  expands — but a user drag never fights the attribute (the
+ *                  group only reacts when the attribute itself changes). This
+ *                  makes panes drivable by reactive frameworks, e.g. Datastar:
+ *                  `data-attr:collapsed="$panelHidden"`. Sync drag-driven
+ *                  changes back via the `collapse` / `expand` events.
  *   order          integer; influences position when conditionally rendered
  */
 export class SchismPaneElement extends HTMLElement {
@@ -17,6 +24,7 @@ export class SchismPaneElement extends HTMLElement {
       "default-size",
       "collapsible",
       "collapsed-size",
+      "collapsed",
       "order",
     ];
   }

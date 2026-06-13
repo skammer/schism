@@ -6,6 +6,9 @@
  *   --schism-handle-bg-hover  hover/active divider background
  *   --schism-handle-color     color of the optional center indicator
  *   --schism-pane-bg          default pane background
+ *   --schism-animate-duration           [animate] flex-grow tween duration
+ *   --schism-animate-duration-collapse  duration while a pane is collapsed
+ *   --schism-animate-easing             [animate] tween easing
  */
 
 schism-group {
@@ -39,6 +42,17 @@ schism-pane {
 schism-group[animate] > schism-pane {
   transition: flex-grow var(--schism-animate-duration, 200ms)
     var(--schism-animate-easing, ease);
+}
+
+/* Optional asymmetric timing: while a pane in the group is collapsed, every
+ * pane tweens with the collapse duration (all flex-grow tweens in a group must
+ * share a clock or the seam wobbles). Falls back to the shared duration —
+ * a quicker close (e.g. 350ms vs 400ms open) is a common motion pattern. */
+schism-group[animate]:has(> schism-pane[data-collapsed]) > schism-pane {
+  transition-duration: var(
+    --schism-animate-duration-collapse,
+    var(--schism-animate-duration, 200ms)
+  );
 }
 
 schism-group[animate][data-dragging] > schism-pane {

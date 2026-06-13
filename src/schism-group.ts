@@ -33,10 +33,16 @@ export class SchismGroupElement extends HTMLElement {
   #layout: number[] = [];
   #expandToSizes = new Map<string, number>();
   #lastNotifiedSizes: Record<string, number> = {};
+  // Last seen value of each pane's `collapsed` attribute, so the attribute is
+  // EDGE-triggered: only a change of the attribute collapses/expands. A pane
+  // collapsed by dragging (attribute absent throughout) is never re-expanded
+  // by an unrelated rescan.
+  #seenCollapsedAttr = new Map<string, boolean>();
   #drag: DragState | null = null;
   #ro: ResizeObserver | null = null;
   #scanScheduled = false;
   #suppressSave = false;
+  #hasAppliedLayout = false;
 
   constructor() {
     super();
@@ -56,6 +62,7 @@ export class SchismGroupElement extends HTMLElement {
 
     // Pointer + keyboard delegated to the group (event.target is the resizer).
     this.addEventListener("pointerdown", this.#onPointerDown);
+    this.addEventListener("dblclick", this.#onDoubleClick);
     this.addEventListener("keydown", this.#onKeyDown);
   }
 
@@ -218,6 +225,34 @@ export class SchismGroupElement extends HTMLElement {
 
     this.#applyLayout(next, "imperative-api");
     this.#suppressSave = false;
+    this.#reconcileCollapsedAttrs();
+  }
+
+  /**
+   * Apply declarative `collapsed` attributes (edge-triggered; see the field
+   * comment on #seenCollapsedAttr). Runs after every scan, so both initial
+   * mount and later attribute flips (e.g. a Datastar `data-attr:collapsed`
+   * binding) are honored without fighting drag-driven state.
+   */
+  #reconcileCollapsedAttrs(): void {
+    const current = new Set(this.#panes.map((p) => p.paneId));
+    for (const id of this.#seenCollapsedAttr.keys()) {
+      if (!current.has(id)) this.#seenCollapsedAttr.delete(id);
+    }
+    for (const p of this.#panes) {
+      const want = p.hasAttribute("collapsed");
+      const last = this.#seenCollapsedAttr.get(p.paneId);
+      this.#seenCollapsedAttr.set(p.paneId, want);
+      if (last === undefined) {
+        // Initial sighting: only force the non-default state. A pane restored
+        // collapsed from storage stays collapsed even without the attribute.
+        if (want && !p.isCollapsed()) this.collapsePane(p);
+        continue;
+      }
+      if (want === last) continue;
+      if (want) this.collapsePane(p);
+      else this.expandPane(p);
+    }
   }
 
   #paneRecords(): PaneRecord[] {
@@ -261,6 +296,15 @@ export class SchismGroupElement extends HTMLElement {
     const changed = !areArraysEqual(this.#layout, next);
     this.#layout = next;
 
+    // The very first layout must not animate: constraint measurement forces a
+    // style flush while panes still have flex-grow 0, so an [animate] group
+    // would otherwise tween every pane open from zero on mount.
+    const firstApply = !this.#hasAppliedLayout && this.#panes.length > 0;
+    if (firstApply) {
+      this.#hasAppliedLayout = true;
+      for (const p of this.#panes) p.style.transition = "none";
+    }
+
     for (let i = 0; i < this.#panes.length; i++) {
       const p = this.#panes[i]!;
       const size = next[i] ?? 0;
@@ -279,6 +323,11 @@ export class SchismGroupElement extends HTMLElement {
         p.removeAttribute("data-collapsed");
         p.setAttribute("data-expanded", "");
       }
+    }
+
+    if (firstApply) {
+      void this.offsetWidth; // flush styles before re-enabling transitions
+      for (const p of this.#panes) p.style.transition = "";
     }
 
     this.#updateAria();
@@ -448,6 +497,32 @@ export class SchismGroupElement extends HTMLElement {
     this.#endDrag();
   };
 
+  /** Pointer parity with the Enter key: double-click a resizer to toggle
+   * collapse of the adjacent collapsible pane. */
+  #onDoubleClick = (e: MouseEvent): void => {
+    const target = e.target as Element | null;
+    const resizer = target?.closest("schism-resizer") as SchismResizerElement | null;
+    if (!resizer || resizer.parentElement !== this) return;
+    if (resizer.hasAttribute("disabled")) return;
+    const idx = this.#resizers.indexOf(resizer);
+    if (idx < 0 || idx >= this.#panes.length - 1) return;
+    if (this.#toggleAdjacentCollapse(idx)) e.preventDefault();
+  };
+
+  /** Toggle collapse of the pane adjacent to resizer `idx`: the leading pane
+   * if collapsible (the Enter key's historical target), else the trailing one
+   * (covers end-anchored side panels). Returns whether anything toggled. */
+  #toggleAdjacentCollapse(idx: number): boolean {
+    for (const pane of [this.#panes[idx], this.#panes[idx + 1]]) {
+      if (!pane) continue;
+      if (!this.#paneConstraints(pane).collapsible) continue;
+      if (pane.isCollapsed()) this.expandPane(pane);
+      else this.collapsePane(pane);
+      return true;
+    }
+    return false;
+  }
+
   #endDrag(): void {
     if (!this.#drag) return;
     const { resizer } = this.#drag;
@@ -506,14 +581,9 @@ export class SchismGroupElement extends HTMLElement {
         movement = 100;
         break;
       case "Enter": {
-        // Toggle collapse on the leading pane if collapsible.
-        const leading = this.#panes[idx]!;
-        const c = this.#paneConstraints(leading);
-        if (c.collapsible) {
-          if (leading.isCollapsed()) this.expandPane(leading);
-          else this.collapsePane(leading);
-          e.preventDefault();
-        }
+        // Toggle collapse on the adjacent collapsible pane (leading first;
+        // falls back to trailing so end-anchored side panels work too).
+        if (this.#toggleAdjacentCollapse(idx)) e.preventDefault();
         return;
       }
       case "F6": {
