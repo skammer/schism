@@ -386,7 +386,7 @@ export class SchismGroupElement extends HTMLElement {
       if (c.collapsible) {
         const wasCollapsed = last != null && areNumbersAlmostEqual(last, collapsed);
         const nowCollapsed = areNumbersAlmostEqual(size, collapsed);
-        if (!wasCollapsed && nowCollapsed) {
+        if (last != null && !wasCollapsed && nowCollapsed) {
           // Remember previous size so a future expand can restore it.
           if (last != null && !areNumbersAlmostEqual(last, collapsed)) {
             this.#expandToSizes.set(pane.paneId, last);
