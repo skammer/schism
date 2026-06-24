@@ -70,7 +70,7 @@ Outputs to `dist/`:
 
 ## Layout model
 
-A `<schism-group>` is a flex container; `<schism-pane>` and `<schism-resizer>` are its direct children. Pane sizes are written as `flex-grow: <percent>` on each pane (the percents always sum to 100). All constraints are stored as percentages internally; px / em / rem / vh / vw values are normalized against the group's measured pixel size.
+A `<schism-group>` is a flex container; `<schism-pane>` and `<schism-resizer>` are its direct children. Pane sizes are written as `flex-grow: <percent>` on each pane (the percents always sum to 100). All constraints are stored as percentages internally; px / em / rem / vh / vw values are normalized against the group's measured pixel size. Panes with `size-mode="fixed"` keep their pixel size across group resizes by recalculating their percent from the stored px size.
 
 ```
 <schism-group> (display:flex)
@@ -138,6 +138,7 @@ Each region. Light-DOM children render inside it.
 | `min-size`       | `0%`          | Accepts `%`, `px`, `em`, `rem`, `vh`, `vw`, or unitless number = %               |
 | `max-size`       | `100%`        | Same units                                                                        |
 | `default-size`   | even split    | Same units. Remaining space split evenly among panes without a `default-size`     |
+| `size-mode`      | `"fluid"`     | `"fluid"` scales with the group; `"fixed"` keeps the pane's px size on resize     |
 | `collapsible`    | (boolean)     | Enables Enter-to-collapse + halfway-snap                                          |
 | `collapsed-size` | `0%`          | Size while collapsed                                                              |
 | `collapsed`      | (boolean)     | Declarative collapse/expand for `collapsible` panes — see below                   |
@@ -337,6 +338,20 @@ group.addEventListener("layout-change", (e) => {
 sidebar.addEventListener("collapse", () => console.log("closed"));
 sidebar.addEventListener("expand",   () => console.log("open"));
 ```
+
+### Fixed-size sidebar
+
+```html
+<schism-group direction="horizontal">
+  <schism-pane size-mode="fixed" default-size="280px" min-size="200px">
+    sidebar
+  </schism-pane>
+  <schism-resizer></schism-resizer>
+  <schism-pane>main</schism-pane>
+</schism-group>
+```
+
+`size-mode="fixed"` keeps the pane at its current pixel width/height when the group resizes. Dragging the adjacent resizer updates the stored fixed pixel size.
 
 ### Conditionally rendered panes (preserve order)
 

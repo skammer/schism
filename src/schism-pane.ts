@@ -5,6 +5,7 @@
  *   min-size       e.g. "20%" or "240px" (default 0%)
  *   max-size       e.g. "80%" or "600px" (default 100%)
  *   default-size   initial size; remainder split evenly when omitted
+ *   size-mode      "fluid" (default) or "fixed"
  *   collapsible    boolean
  *   collapsed-size size while collapsed (default 0)
  *   collapsed      declarative collapse/expand for `collapsible` panes.
@@ -22,6 +23,7 @@ export class SchismPaneElement extends HTMLElement {
       "min-size",
       "max-size",
       "default-size",
+      "size-mode",
       "collapsible",
       "collapsed-size",
       "collapsed",

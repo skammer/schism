@@ -4,6 +4,7 @@ import type { PaneGroupStorage, PaneRecord } from "./types.js";
 export interface PaneConfigState {
   layout: number[];
   expandToSizes: { [paneId: string]: number };
+  fixedSizesPx?: { [paneId: string]: number };
 }
 export type SerializedPaneGroupState = { [paneKey: string]: PaneConfigState };
 
@@ -30,11 +31,18 @@ function groupKey(autoSaveId: string): string {
 
 function paneKey(panes: PaneRecord[]): string {
   return panes
-    .map((p) =>
-      p.order != null
-        ? `${p.order}:${JSON.stringify(p.constraints)}`
-        : JSON.stringify(p.constraints),
-    )
+    .map((p) => {
+      const attrs = [
+        "min-size",
+        "max-size",
+        "default-size",
+        "size-mode",
+        "collapsible",
+        "collapsed-size",
+        "order",
+      ].map((name) => [name, p.element.getAttribute(name)] as const);
+      return JSON.stringify(attrs.filter(([, value]) => value != null));
+    })
     .sort()
     .join(",");
 }
@@ -67,17 +75,20 @@ export function savePaneGroup({
   panes,
   layout,
   expandToSizes,
+  fixedSizesPx,
   storage,
 }: {
   autoSaveId: string;
   panes: PaneRecord[];
   layout: number[];
   expandToSizes: Map<string, number>;
+  fixedSizesPx?: Map<string, number>;
   storage: PaneGroupStorage;
 }): void {
   if (layout.length === 0 || layout.length !== panes.length) return;
   const snapPanes = [...panes];
   const snapMap = new Map(expandToSizes);
+  const snapFixedMap = fixedSizesPx ? new Map(fixedSizesPx) : undefined;
   const snapLayout = [...layout];
 
   const existing = debounceTimers[autoSaveId];
@@ -89,6 +100,7 @@ export function savePaneGroup({
     state[paneKey(snapPanes)] = {
       layout: snapLayout,
       expandToSizes: Object.fromEntries(snapMap),
+      fixedSizesPx: snapFixedMap ? Object.fromEntries(snapFixedMap) : undefined,
     };
     try {
       storage.setItem(groupKey(autoSaveId), JSON.stringify(state));

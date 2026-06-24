@@ -6,6 +6,7 @@ export interface PaneConstraints {
   defaultSize?: number;
   collapsible?: boolean;
   collapsedSize?: number;
+  sizeMode?: "fluid" | "fixed";
 }
 
 export type ResizeTrigger = "imperative-api" | "keyboard" | "pointer";

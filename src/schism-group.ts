@@ -7,7 +7,7 @@ import { resizePane } from "./core/resize.js";
 import { clearGlobalCursor, getCursorStyle, setGlobalCursor } from "./core/style.js";
 import { defaultStorage, loadPaneGroup, savePaneGroup } from "./core/storage.js";
 import type { Direction, PaneConstraints, PaneRecord, PaneGroupStorage } from "./core/types.js";
-import { sizeToPercent } from "./core/units.js";
+import { sizeToPercent, sizeToPixels } from "./core/units.js";
 import type { SchismPaneElement } from "./schism-pane.js";
 import type { SchismResizerElement } from "./schism-resizer.js";
 
@@ -19,6 +19,8 @@ interface DragState {
   initialLayout: number[];
   groupSizePx: number;
 }
+
+type ApplyTrigger = "pointer" | "keyboard" | "imperative-api" | "container-resize";
 
 export class SchismGroupElement extends HTMLElement {
   static get observedAttributes(): string[] {
@@ -32,6 +34,7 @@ export class SchismGroupElement extends HTMLElement {
   #resizers: SchismResizerElement[] = [];
   #layout: number[] = [];
   #expandToSizes = new Map<string, number>();
+  #fixedSizesPx = new Map<string, number>();
   #lastNotifiedSizes: Record<string, number> = {};
   // Last seen value of each pane's `collapsed` attribute, so the attribute is
   // EDGE-triggered: only a change of the attribute collapses/expands. A pane
@@ -153,7 +156,7 @@ export class SchismGroupElement extends HTMLElement {
     if (!areNumbersAlmostEqual(cur, collapsed)) return;
     const stored = this.#expandToSizes.get(p.paneId);
     const min = c[i]?.minSize ?? 0;
-    const target = toSize ?? stored ?? min;
+    const target = toSize ?? this.#fixedSizePercent(p) ?? stored ?? min;
     this.resizePane(p, target);
   }
 
@@ -212,15 +215,25 @@ export class SchismGroupElement extends HTMLElement {
           if (loaded.expandToSizes) {
             this.#expandToSizes = new Map(Object.entries(loaded.expandToSizes));
           }
+          if (loaded.fixedSizesPx) {
+            this.#fixedSizesPx = new Map(
+              Object.entries(loaded.fixedSizesPx).map(([id, px]) => [id, Number(px)]),
+            );
+          }
         }
       }
+      this.#syncFixedSizes(initial ?? undefined);
       next = validateLayout({
-        layout: initial ?? defaultLayout(constraints),
+        layout: this.#layoutWithFixedSizes(initial ?? defaultLayout(constraints), constraints),
         paneConstraints: constraints,
       });
       this.#suppressSave = true;
     } else {
-      next = validateLayout({ layout: this.#layout, paneConstraints: constraints });
+      this.#syncFixedSizes(this.#layout);
+      next = validateLayout({
+        layout: this.#layoutWithFixedSizes(this.#layout, constraints),
+        paneConstraints: constraints,
+      });
     }
 
     this.#applyLayout(next, "imperative-api");
@@ -275,11 +288,13 @@ export class SchismGroupElement extends HTMLElement {
     const def = sizeToPercent(p.getAttribute("default-size"), groupPx, this);
     const collapsedSize = sizeToPercent(p.getAttribute("collapsed-size"), groupPx, this) ?? 0;
     const collapsible = p.hasAttribute("collapsible");
+    const sizeMode = p.getAttribute("size-mode") === "fixed" ? "fixed" : "fluid";
     const result: PaneConstraints = {
       minSize: clamp(min, 0, 100),
       maxSize: clamp(max, 0, 100),
       collapsible,
       collapsedSize: clamp(collapsedSize, 0, 100),
+      sizeMode,
     };
     if (def != null) result.defaultSize = clamp(def, 0, 100);
     return result;
@@ -292,16 +307,18 @@ export class SchismGroupElement extends HTMLElement {
 
   // ---------- layout application ----------
 
-  #applyLayout(next: number[], trigger: "pointer" | "keyboard" | "imperative-api"): void {
+  #applyLayout(next: number[], trigger: ApplyTrigger): void {
     const changed = !areArraysEqual(this.#layout, next);
     this.#layout = next;
+    if (trigger !== "container-resize") this.#captureFixedSizes(next);
 
     // The very first layout must not animate: constraint measurement forces a
     // style flush while panes still have flex-grow 0, so an [animate] group
     // would otherwise tween every pane open from zero on mount.
     const firstApply = !this.#hasAppliedLayout && this.#panes.length > 0;
-    if (firstApply) {
-      this.#hasAppliedLayout = true;
+    const suppressTransitions = firstApply || trigger === "container-resize";
+    if (suppressTransitions) {
+      if (firstApply) this.#hasAppliedLayout = true;
       for (const p of this.#panes) p.style.transition = "none";
     }
 
@@ -325,7 +342,7 @@ export class SchismGroupElement extends HTMLElement {
       }
     }
 
-    if (firstApply) {
+    if (suppressTransitions) {
       void this.offsetWidth; // flush styles before re-enabling transitions
       for (const p of this.#panes) p.style.transition = "";
     }
@@ -346,6 +363,7 @@ export class SchismGroupElement extends HTMLElement {
           panes: this.#paneRecords(),
           layout: next,
           expandToSizes: this.#expandToSizes,
+          fixedSizesPx: this.#fixedSizesPx,
           storage: this.storage,
         });
       }
@@ -412,11 +430,14 @@ export class SchismGroupElement extends HTMLElement {
   #onGroupResize(): void {
     if (this.#panes.length === 0) return;
     if (this.#drag) return; // don't re-validate mid-drag
+    const constraints = this.#constraints();
+    const layout = this.#layout.length === this.#panes.length ? this.#layout : defaultLayout(constraints);
+    this.#syncFixedSizes(layout);
     const next = validateLayout({
-      layout: this.#layout.length === this.#panes.length ? this.#layout : defaultLayout(this.#constraints()),
-      paneConstraints: this.#constraints(),
+      layout: this.#layoutWithFixedSizes(layout, constraints),
+      paneConstraints: constraints,
     });
-    this.#applyLayout(next, "imperative-api");
+    this.#applyLayout(next, "container-resize");
   }
 
   // ---------- pointer drag ----------
@@ -618,6 +639,92 @@ export class SchismGroupElement extends HTMLElement {
     });
     this.#applyLayout(next, "keyboard");
   };
+
+  #isFixedPane(p: SchismPaneElement): boolean {
+    return p.getAttribute("size-mode") === "fixed";
+  }
+
+  #fixedSizePercent(p: SchismPaneElement): number | null {
+    const groupPx = this.#groupSize();
+    const px = this.#fixedSizesPx.get(p.paneId);
+    return px == null || groupPx <= 0 ? null : (px / groupPx) * 100;
+  }
+
+  #syncFixedSizes(layout?: number[]): void {
+    const current = new Set(this.#panes.map((p) => p.paneId));
+    for (const id of this.#fixedSizesPx.keys()) {
+      if (!current.has(id)) this.#fixedSizesPx.delete(id);
+    }
+
+    const groupPx = this.#groupSize();
+    if (groupPx <= 0) return;
+
+    for (let i = 0; i < this.#panes.length; i++) {
+      const pane = this.#panes[i]!;
+      if (!this.#isFixedPane(pane) || this.#fixedSizesPx.has(pane.paneId)) continue;
+      const fromDefault = sizeToPixels(pane.getAttribute("default-size"), groupPx, this);
+      const fromLayout = layout?.[i] != null ? (layout[i]! / 100) * groupPx : null;
+      const px = fromDefault ?? fromLayout;
+      if (px != null && Number.isFinite(px)) this.#fixedSizesPx.set(pane.paneId, px);
+    }
+  }
+
+  #captureFixedSizes(layout: number[]): void {
+    const groupPx = this.#groupSize();
+    if (groupPx <= 0) return;
+    for (let i = 0; i < this.#panes.length; i++) {
+      const pane = this.#panes[i]!;
+      if (!this.#isFixedPane(pane)) continue;
+      const constraints = this.#paneConstraints(pane);
+      const collapsed = constraints.collapsedSize ?? 0;
+      if (constraints.collapsible && areNumbersAlmostEqual(layout[i] ?? 0, collapsed)) continue;
+      this.#fixedSizesPx.set(pane.paneId, ((layout[i] ?? 0) / 100) * groupPx);
+    }
+  }
+
+  #layoutWithFixedSizes(layout: number[], constraints: PaneConstraints[]): number[] {
+    if (layout.length !== this.#panes.length) return layout;
+    const groupPx = this.#groupSize();
+    if (groupPx <= 0) return layout;
+
+    const next = [...layout];
+    let fixedTotal = 0;
+    let fluidTotal = 0;
+    const fluidIndices: number[] = [];
+
+    for (let i = 0; i < this.#panes.length; i++) {
+      const pane = this.#panes[i]!;
+      const c = constraints[i]!;
+      if (!this.#isFixedPane(pane)) {
+        fluidIndices.push(i);
+        fluidTotal += layout[i] ?? 0;
+        continue;
+      }
+
+      const collapsed = c.collapsedSize ?? 0;
+      if (c.collapsible && areNumbersAlmostEqual(layout[i] ?? 0, collapsed)) {
+        next[i] = collapsed;
+      } else {
+        const px = this.#fixedSizesPx.get(pane.paneId);
+        if (px != null) {
+          next[i] = resizePane({
+            paneConstraints: constraints,
+            paneIndex: i,
+            initialSize: (px / groupPx) * 100,
+          });
+        }
+      }
+      fixedTotal += next[i] ?? 0;
+    }
+
+    const remaining = Math.max(0, 100 - fixedTotal);
+    for (let offset = 0; offset < fluidIndices.length; offset++) {
+      const i = fluidIndices[offset]!;
+      next[i] = fluidTotal > 0 ? ((layout[i] ?? 0) / fluidTotal) * remaining : remaining / fluidIndices.length;
+    }
+
+    return next;
+  }
 }
 
 function clamp(n: number, lo: number, hi: number): number {
