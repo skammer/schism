@@ -15,6 +15,7 @@
  *                  makes panes drivable by reactive frameworks, e.g. Datastar:
  *                  `data-attr:collapsed="$panelHidden"`. Sync drag-driven
  *                  changes back via the `collapse` / `expand` events.
+ *   pane-id        stable identity for persisted fixed sizes
  *   order          integer; influences position when conditionally rendered
  */
 export class SchismPaneElement extends HTMLElement {
@@ -27,12 +28,17 @@ export class SchismPaneElement extends HTMLElement {
       "collapsible",
       "collapsed-size",
       "collapsed",
+      "pane-id",
       "order",
     ];
   }
 
-  // Internal id used for persistence keying & event detail.
-  paneId: string = `p-${Math.random().toString(36).slice(2, 9)}`;
+  // Stable id is required for fixed-size persistence across page loads.
+  #generatedPaneId = `p-${Math.random().toString(36).slice(2, 9)}`;
+
+  get paneId(): string {
+    return this.getAttribute("pane-id") || this.#generatedPaneId;
+  }
 
   constructor() {
     super();
@@ -43,7 +49,7 @@ export class SchismPaneElement extends HTMLElement {
   connectedCallback(): void {
     if (!this.hasAttribute("role")) this.setAttribute("role", "group");
     if (!this.hasAttribute("data-pane")) this.setAttribute("data-pane", "");
-    if (!this.hasAttribute("data-pane-id")) this.setAttribute("data-pane-id", this.paneId);
+    this.setAttribute("data-pane-id", this.paneId);
     this.#notify("connect");
   }
 
@@ -51,8 +57,9 @@ export class SchismPaneElement extends HTMLElement {
     this.#notify("disconnect");
   }
 
-  attributeChangedCallback(): void {
+  attributeChangedCallback(name: string): void {
     if (!this.isConnected) return;
+    if (name === "pane-id") this.setAttribute("data-pane-id", this.paneId);
     this.#notify("change");
   }
 

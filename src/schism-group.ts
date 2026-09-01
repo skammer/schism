@@ -664,7 +664,7 @@ export class SchismGroupElement extends HTMLElement {
       if (!this.#isFixedPane(pane) || this.#fixedSizesPx.has(pane.paneId)) continue;
       const fromDefault = sizeToPixels(pane.getAttribute("default-size"), groupPx, this);
       const fromLayout = layout?.[i] != null ? (layout[i]! / 100) * groupPx : null;
-      const px = fromDefault ?? fromLayout;
+      const px = fromLayout ?? fromDefault;
       if (px != null && Number.isFinite(px)) this.#fixedSizesPx.set(pane.paneId, px);
     }
   }

@@ -142,6 +142,7 @@ Each region. Light-DOM children render inside it.
 | `collapsible`    | (boolean)     | Enables Enter-to-collapse + halfway-snap                                          |
 | `collapsed-size` | `0%`          | Size while collapsed                                                              |
 | `collapsed`      | (boolean)     | Declarative collapse/expand for `collapsible` panes — see below                   |
+| `pane-id`        | generated     | Stable identity for persisted fixed sizes across page loads                       |
 | `order`          | DOM order     | Numeric; controls position when conditionally rendering panes                     |
 
 The `collapsed` attribute is **edge-triggered**: adding it collapses the pane,
@@ -263,6 +264,13 @@ Add `save-id` to opt in:
 ```
 
 The group debounces writes (100 ms) to `localStorage` under the key `schism:editor`. Storage shape includes the layout and a per-pane "expand-to" size (so that collapsing then refreshing then expanding restores the prior size).
+
+Give every `size-mode="fixed"` pane a stable `pane-id` so its pixel size can be
+restored after page reloads:
+
+```html
+<schism-pane pane-id="editor-sidebar" size-mode="fixed">…</schism-pane>
+```
 
 To use a custom store (cookie, IndexedDB, server-pushed):
 
